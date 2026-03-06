@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPAC AML 퀴즈 트레이너 — 전체판</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f8fafc; --surface:#ffffff; --surface2:#f1f5f9; --border:#e2e8f0;
+  --border2:#cbd5e1;
+  --accent:#2563eb; --accent-light:#eff6ff; --accent2:#7c3aed; --accent3:#059669;
+  --danger:#dc2626; --danger-light:#fef2f2; --warn:#d97706; --warn-light:#fffbeb;
+  --text:#0f172a; --text2:#64748b; --text3:#94a3b8;
+  --ring:0 0 0 3px rgba(37,99,235,0.12);
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.05);
+  --shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,0.07),0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.07),0 4px 6px -2px rgba(0,0,0,0.05);
+  --radius:8px; --radius-lg:12px; --radius-xl:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+.bg-grid{display:none;}
+.bg-orb{display:none;}
+#app{position:relative;z-index:1;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* HOME */
+#home{align-items:center;padding:48px 20px 100px;gap:24px;background:var(--bg);}
+.logo-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);border:1px solid rgba(37,99,235,0.2);padding:4px 12px;border-radius:20px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px;}
+h1{font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.2;color:var(--text);letter-spacing:-0.5px;}
+.subtitle{color:var(--text2);font-size:13px;margin-top:4px;line-height:1.6;}
+.dashboard{width:100%;max-width:800px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;box-shadow:var(--shadow);}
+.dash-title{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-weight:600;margin-bottom:14px;}
+.overall-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center;}
+.stat-num{font-size:22px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;letter-spacing:-0.5px;}
+.stat-lbl{font-size:10px;color:var(--text2);margin-top:3px;font-weight:500;}
+.progress-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.prog-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.prog-card:hover{border-color:var(--accent);background:var(--accent-light);box-shadow:var(--shadow-md);}
+.prog-card.done{border-color:var(--accent3);background:#f0fdf4;}
+.prog-card-label{font-size:10px;color:var(--text2);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:1px;}
+.prog-card-title{font-size:13px;font-weight:700;margin-bottom:10px;line-height:1.4;color:var(--text);}
+.prog-bar-wrap{height:4px;background:var(--border);border-radius:99px;overflow:hidden;}
+.prog-bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .5s ease;}
+.prog-card.done .prog-bar-fill{background:var(--accent3);}
+.prog-pct{font-size:13px;font-weight:700;color:var(--accent);font-family:'Space Mono',monospace;margin-top:6px;}
+.prog-card.done .prog-pct{color:var(--accent3);}
+.mode-grid{width:100%;max-width:800px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.mode-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 18px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow-sm);}
+.mode-btn:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.mode-icon{font-size:22px;}
+.mode-name{font-size:15px;font-weight:700;color:var(--text);}
+.mode-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+.mode-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid rgba(37,99,235,0.15);}
+
+/* THEORY */
+#theory{padding:0;align-items:center;background:var(--bg);}
+.theory-container{width:100%;max-width:700px;display:flex;flex-direction:column;gap:0;padding-bottom:100px;}
+.theory-header{display:flex;align-items:center;gap:10px;padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;box-shadow:var(--shadow-sm);}
+.back-btn{background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:var(--radius);padding:6px 12px;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;}
+.back-btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface2);}
+.theory-progress-bar{flex:1;height:4px;background:var(--border);border-radius:99px;overflow:hidden;}
+.theory-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .4s ease;}
+.theory-card-counter{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);white-space:nowrap;font-weight:600;}
+.timer-ring-wrap{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);white-space:nowrap;}
+.theory-card-wrap-pad{padding:20px;}
+.theory-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;animation:slideIn .25s ease;box-shadow:var(--shadow);}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.theory-topic{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.theory-title{font-size:18px;font-weight:800;margin-bottom:18px;line-height:1.4;color:var(--text);letter-spacing:-0.3px;}
+.theory-body{font-size:13px;line-height:1.85;color:var(--text2);}
+.theory-body table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);}
+.theory-body th{background:var(--surface2);border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:8px 10px;text-align:left;font-weight:700;color:var(--text);font-size:11px;}
+.theory-body td{border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:8px 10px;color:var(--text2);}
+.theory-body tr:last-child td{border-bottom:none;}
+.theory-body td:last-child,.theory-body th:last-child{border-right:none;}
+.theory-body tr:hover td{background:var(--surface2);}
+.theory-tip{background:var(--accent-light);border:1px solid rgba(37,99,235,0.2);border-left:3px solid var(--accent);border-radius:var(--radius);padding:10px 14px;margin:10px 0;font-size:12px;color:var(--text);}
+.theory-tip .tip-label{font-weight:700;color:var(--accent);margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;}
+.warn-tip{background:var(--warn-light);border:1px solid rgba(217,119,6,0.2);border-left:3px solid var(--warn);border-radius:var(--radius);padding:10px 14px;margin:10px 0;font-size:12px;color:var(--text);}
+.warn-tip .tip-label{font-weight:700;color:var(--warn);margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;}
+.key-point{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);padding:8px 12px;margin:4px 0;font-size:12px;display:flex;align-items:flex-start;gap:7px;color:var(--text);}
+.key-point::before{content:'✓';color:var(--accent3);font-weight:700;flex-shrink:0;}
+.danger-point{background:var(--danger-light);border:1px solid #fecaca;border-radius:var(--radius);padding:8px 12px;margin:4px 0;font-size:12px;display:flex;align-items:flex-start;gap:7px;color:var(--text);}
+.danger-point::before{content:'✗';color:var(--danger);font-weight:700;flex-shrink:0;}
+.theory-nav{display:flex;gap:8px;padding:0 20px 20px;}
+.btn-primary{flex:1;padding:11px 16px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:0 1px 2px rgba(37,99,235,0.25);}
+.btn-primary:hover{background:#1d4ed8;box-shadow:0 3px 8px rgba(37,99,235,0.3);}
+.btn-secondary{flex:1;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.btn-secondary:hover{border-color:var(--border2);background:var(--surface2);}
+.studied-badge{display:inline-flex;align-items:center;gap:4px;background:#dcfce7;border:1px solid #bbf7d0;border-radius:20px;padding:2px 8px;font-size:10px;color:var(--accent3);font-weight:600;}
+.category-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.cat-tab{padding:4px 12px;border-radius:4px;background:var(--surface);border:1px solid var(--border);font-size:11px;cursor:pointer;transition:all .15s;color:var(--text2);font-family:'Noto Sans KR',sans-serif;font-weight:500;box-shadow:var(--shadow-sm);}
+.cat-tab:hover{border-color:var(--border2);color:var(--text);background:var(--surface2);}
+.cat-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+
+/* QUIZ */
+#quiz{padding:0;align-items:center;background:var(--bg);}
+.quiz-container{width:100%;max-width:680px;display:flex;flex-direction:column;gap:0;}
+.quiz-header{display:flex;align-items:center;gap:10px;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;box-shadow:var(--shadow-sm);}
+.quiz-meta{display:flex;gap:6px;align-items:center;flex:1;flex-wrap:wrap;}
+.quiz-count{font-family:'Space Mono',monospace;font-size:12px;color:var(--text2);font-weight:600;}
+.score-chip{background:#dcfce7;border:1px solid #bbf7d0;border-radius:4px;padding:2px 8px;font-size:12px;color:var(--accent3);font-family:'Space Mono',monospace;font-weight:700;}
+.streak-chip{background:var(--warn-light);border:1px solid #fde68a;border-radius:4px;padding:2px 8px;font-size:12px;color:var(--warn);font-family:'Space Mono',monospace;font-weight:700;}
+.timer-wrap{position:relative;width:44px;height:44px;flex-shrink:0;}
+.timer-svg{transform:rotate(-90deg);}
+.timer-track{fill:none;stroke:var(--border);stroke-width:4;}
+.timer-fill{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .5s;}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);}
+.quiz-card-pad{padding:16px 20px 20px;}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;animation:slideIn .25s ease;box-shadow:var(--shadow);}
+.q-category{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-weight:600;margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:700;line-height:1.6;margin-bottom:18px;color:var(--text);}
+.options{display:flex;flex-direction:column;gap:7px;}
+.opt-btn{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;text-align:left;transition:all .12s;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-sm);}
+.opt-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-light);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.correct{border-color:var(--accent3);background:#f0fdf4;color:var(--text);}
+.opt-btn.wrong{border-color:var(--danger);background:var(--danger-light);color:var(--text2);}
+.opt-letter{width:24px;height:24px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;color:var(--text2);}
+.opt-btn.correct .opt-letter{background:var(--accent3);border-color:var(--accent3);color:#fff;}
+.opt-btn.wrong .opt-letter{background:var(--danger);border-color:var(--danger);color:#fff;}
+.result-popup{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;animation:popIn .2s ease;margin-top:8px;box-shadow:var(--shadow);}
+@keyframes popIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.result-correct{border-color:#bbf7d0;background:#f0fdf4;}
+.result-wrong{border-color:#fecaca;background:var(--danger-light);}
+.result-header{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text);}
+.result-explain{font-size:12px;color:var(--text2);line-height:1.75;}
+.btn-next{width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;margin-top:12px;box-shadow:var(--shadow-sm);}
+.btn-next:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent);}
+
+/* WRONG */
+#wrong-screen{padding:0;align-items:center;background:var(--bg);}
+.wrong-container{width:100%;max-width:700px;display:flex;flex-direction:column;gap:0;padding-bottom:100px;}
+.wrong-header-bar{padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:10px;}
+.wrong-inner{padding:16px 20px;display:flex;flex-direction:column;gap:10px;}
+.section-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--text);}
+.wrong-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;animation:slideIn .3s ease;box-shadow:var(--shadow-sm);}
+.wrong-item-num{font-size:10px;color:var(--text3);margin-bottom:6px;font-family:'Space Mono',monospace;font-weight:600;}
+.wrong-q{font-size:13px;font-weight:700;margin-bottom:12px;line-height:1.5;color:var(--text);}
+.wrong-my{font-size:12px;color:var(--danger);margin-bottom:4px;display:flex;gap:6px;}
+.wrong-ans{font-size:12px;color:var(--accent3);margin-bottom:8px;display:flex;gap:6px;font-weight:600;}
+.wrong-explain{font-size:12px;color:var(--text2);line-height:1.75;background:var(--surface2);border-radius:var(--radius);padding:10px 12px;border:1px solid var(--border);}
+.empty-wrong{text-align:center;padding:80px 20px;color:var(--text2);}
+.empty-wrong .big{font-size:48px;margin-bottom:10px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--text);border-radius:var(--radius);padding:8px 16px;font-size:12px;font-weight:600;color:#fff;transition:all .25s;z-index:999;white-space:nowrap;box-shadow:var(--shadow-lg);pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.success{background:var(--accent3);}
+.toast.error{background:var(--danger);}
+
+/* NAV */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;padding:6px 16px 8px;gap:4px;justify-content:center;box-shadow:0 -1px 0 var(--border);}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 20px;border-radius:var(--radius);background:transparent;border:none;cursor:pointer;color:var(--text2);font-size:9px;font-family:'Noto Sans KR',sans-serif;transition:all .15s;font-weight:500;}
+.nav-btn:hover{background:var(--surface2);color:var(--text);}
+.nav-btn.active{background:var(--accent-light);color:var(--accent);font-weight:700;}
+.nav-icon{font-size:16px;}
+@media(max-width:600px){.theory-card,.q-card{padding:16px;}.theory-title{font-size:16px;}.q-text{font-size:14px;}.overall-stats{grid-template-columns:repeat(2,1fr);}}
+
+/* ── DARK THEME ── */
+body.dark {
+  --bg:#0f1117; --surface:#1a1d27; --surface2:#232736; --border:#2d3348;
+  --border2:#3d4560;
+  --accent:#6366f1; --accent-light:rgba(99,102,241,0.12); --accent2:#8b5cf6; --accent3:#10b981;
+  --danger:#f87171; --danger-light:rgba(248,113,113,0.1); --warn:#fbbf24; --warn-light:rgba(251,191,36,0.1);
+  --text:#f1f5f9; --text2:#94a3b8; --text3:#64748b;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.3);
+  --shadow:0 1px 3px rgba(0,0,0,0.4),0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,0.4);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.4);
+}
+body.dark .nav-bar{background:rgba(15,17,23,0.96);}
+body.dark .theory-header,body.dark .quiz-header,body.dark .wrong-header-bar{background:var(--surface);}
+body.dark .prog-card.done{background:rgba(16,185,129,0.08);}
+body.dark .key-point{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.2);}
+body.dark .danger-point{background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.2);}
+body.dark .theory-tip{background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);}
+body.dark .warn-tip{background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);}
+body.dark .result-correct{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.3);}
+body.dark .result-wrong{background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.3);}
+body.dark .score-chip{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.2);}
+body.dark .streak-chip{background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.2);}
+body.dark .opt-btn.correct{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.4);}
+body.dark .opt-btn.wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.4);}
+/* theme toggle */
+.theme-toggle{position:fixed;top:14px;right:16px;z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:var(--shadow);}
+.theme-toggle:hover{border-color:var(--border2);color:var(--text);}
+
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-orb one"></div>
+<div class="bg-orb two"></div>
+<div id="app">
+
+<!-- ══ THEME TOGGLE ══ -->
+<button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">🌙 다크</button>
+
+<!-- ══ HOME ══ -->
+<div id="home" class="screen active">
+<div style="text-align:center">
+    <div class="logo-badge">TPAC · AML/CFT</div>
+    <h1>TPAC 이론 & 문제풀이 </h1>
+    <p class="subtitle">자금세탁방지 업무능력 검정시험 전체 내용 학습 시스템 | 과목1+과목2 완전판</p>
+  </div>
+  <div class="dashboard">
+    <div class="dash-title">📊 오늘의 학습 성과</div>
+    <div class="overall-stats">
+      <div class="stat-box"><div class="stat-num" id="stat-studied">0</div><div class="stat-lbl">이론 학습 완료</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-acc">0%</div><div class="stat-lbl">퀴즈 정답률</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">총 풀이</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-wrong">0</div><div class="stat-lbl">오답 저장</div></div>
+    </div>
+    <div style="margin:14px 0 8px;font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;">목차별 이론 학습 현황</div>
+    <div class="progress-grid" id="progress-grid"></div>
+  </div>
+  <div class="mode-grid">
+    <button class="mode-btn" onclick="startMode('theory')">
+      <div class="mode-icon">📖</div>
+      <div class="mode-name">이론 학습</div>
+      <div class="mode-desc">챕터별 핵심이론·암기법 카드 학습. 타이머 1분.</div>
+      <span class="mode-tag">⏱ 1분/카드</span>
+    </button>
+    <button class="mode-btn" onclick="startMode('quiz')">
+      <div class="mode-icon">⚡</div>
+      <div class="mode-name">무한 퀴즈</div>
+      <div class="mode-desc">실전 문제 무한 반복. 오답 자동 저장.</div>
+      <span class="mode-tag">⏱ 30초/문제</span>
+    </button>
+    <button class="mode-btn" onclick="showScreen('wrong-screen')">
+      <div class="mode-icon">📝</div>
+      <div class="mode-name">오답 노트</div>
+      <div class="mode-desc">틀린 문제 해설과 함께 복습합니다.</div>
+      <span class="mode-tag" id="wrong-count-badge">오답 0개</span>
+    </button>
+  </div>
+  <div style="height:80px"></div>
+</div>
+
+<!-- ══ THEORY ══ -->
+<div id="theory" class="screen">
+  <div class="theory-container">
+    <div class="theory-header">
+      <button class="back-btn" onclick="showScreen('home')">← 홈</button>
+      <div class="theory-progress-bar"><div class="theory-progress-fill" id="theory-prog-fill" style="width:0%"></div></div>
+      <div class="theory-card-counter" id="theory-card-counter">1 / 35</div>
+      <div class="timer-ring-wrap">
+        <svg class="timer-svg" width="30" height="30" viewBox="0 0 48 48">
+          <circle class="timer-track" cx="24" cy="24" r="20"/>
+          <circle class="timer-fill" id="theory-timer-ring" cx="24" cy="24" r="20" stroke="var(--accent)"/>
+        </svg>
+        <span id="theory-timer-num" style="font-size:12px;font-weight:700;">60</span>
+      </div>
+    </div>
+    <div class="theory-card-wrap-pad" id="theory-card-wrap"></div>
+    <div class="theory-nav">
+      <button class="btn-secondary" id="btn-prev-theory" onclick="prevTheory()">← 이전</button>
+      <button class="btn-primary" id="btn-next-theory" onclick="nextTheory()">다음 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="quiz" class="screen">
+  <div class="quiz-container">
+    <div class="quiz-header">
+      <button class="back-btn" onclick="showScreen('home')">← 홈</button>
+      <div class="quiz-meta">
+        <span class="quiz-count" id="quiz-count">#1</span>
+        <span class="score-chip" id="score-chip">✓ 0</span>
+        <span class="streak-chip" id="streak-chip">🔥 0</span>
+      </div>
+      <div class="timer-wrap">
+        <svg class="timer-svg" width="44" height="44" viewBox="0 0 48 48">
+          <circle class="timer-track" cx="24" cy="24" r="22"/>
+          <circle class="timer-fill" id="quiz-timer-ring" cx="24" cy="24" r="22" stroke="var(--accent)"/>
+        </svg>
+        <div class="timer-num" id="quiz-timer-num">30</div>
+      </div>
+    </div>
+    <div class="category-tabs" id="quiz-cats" style="padding:12px 20px 0;"></div>
+    <div class="quiz-card-pad" id="q-card-wrap"></div>
+  </div>
+</div>
+
+<!-- ══ WRONG ══ -->
+<div id="wrong-screen" class="screen">
+  <div class="wrong-container">
+    <div class="wrong-header-bar">
+      <button class="back-btn" onclick="showScreen('home')">← 홈</button>
+      <div class="section-title">📝 오답 노트</div>
+    </div>
+    <div class="wrong-inner" id="wrong-list"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="showScreen('home')" id="nav-home"><span class="nav-icon">🏠</span>홈</button>
+  <button class="nav-btn" onclick="startMode('theory')" id="nav-theory"><span class="nav-icon">📖</span>이론</button>
+  <button class="nav-btn" onclick="startMode('quiz')" id="nav-quiz"><span class="nav-icon">⚡</span>퀴즈</button>
+  <button class="nav-btn" onclick="showScreen('wrong-screen')" id="nav-wrong"><span class="nav-icon">📝</span>오답</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// THEORY CARDS — 전체 교재 내용 완전 반영 (과목1 + 과목2)
+// ════════════════════════════════════════════════════════
+const THEORY_CARDS = [
+
+// ────── 과목1 Day1 ──────
+{id:'T01',cat:'과목1 · Day1 자금세탁 개요',
+title:'자금세탁(ML)의 정의와 3단계 ★최빈출',
+body:`<p>자금세탁이란 <strong>범죄수익의 불법 원천을 가장(僞裝)하기 위한 과정</strong>입니다.</p>
+<table><tr><th>단계</th><th>영문</th><th>설명</th><th>시험 포인트</th></tr>
+<tr><td>① 배치</td><td>Placement</td><td>불법자금을 금융시스템에 최초 투입. 스머핑, 카지노 칩 구매</td><td>CTR 회피 목적의 분할거래. 금융시스템 '진입' 단계</td></tr>
+<tr><td>② 반복</td><td>Layering</td><td>복잡한 거래로 출처 은폐. 해외 페이퍼컴퍼니, 가상자산 전환</td><td>국경 간 이동·다수 계좌. '복잡성'이 핵심</td></tr>
+<tr><td>③ 통합</td><td>Integration</td><td>세탁 자금을 합법 경제활동에 투입. 부동산 매입, 미술품 구매</td><td>가장 적발하기 어려운 단계</td></tr></table>
+<div class="theory-tip"><div class="tip-label">★ 암기 TIP</div>P→L→I = 배치→반복→통합 (PLI 순서!)</div>`},
+
+{id:'T02',cat:'과목1 · Day1 자금세탁 개요',
+title:'ML vs TF vs PF (확산금융) 비교',
+body:`<table><tr><th>구분</th><th>자금세탁(ML)</th><th>테러자금조달(TF)</th><th>확산금융(PF)</th></tr>
+<tr><td>자금 출처</td><td>불법자금(범죄수익)</td><td><strong>합법·불법 모두 가능</strong></td><td>합법·불법 모두</td></tr>
+<tr><td>목적</td><td>불법자금 합법화</td><td>테러행위 지원</td><td>WMD(대량살상무기) 개발 지원</td></tr>
+<tr><td>금액 규모</td><td>대체로 거액</td><td><strong>소액도 가능 (수만원~)</strong></td><td>국가 단위 거액</td></tr>
+<tr><td>핵심 차이</td><td>과거 범죄 → 미래 합법화</td><td>미래 범죄행위를 위한 자금 확보</td><td>UN 안보리 제재 대상</td></tr></table>
+<div class="warn-tip"><div class="tip-label">⚠ 빈출 함정</div>'테러자금은 반드시 불법자금에서 나온다' → <strong>오답!</strong> 합법자금(기부금, 사업수익 등)도 대상!</div>
+<div class="warn-tip"><div class="tip-label">⚠ 빈출 함정</div>'ML은 미래 범죄를 위한 자금 확보가 목적이다' → <strong>오답!</strong> 이것은 TF의 목적!</div>`},
+
+// ────── 과목1 Day2 ──────
+{id:'T03',cat:'과목1 · Day2 국제조약',
+title:'주요 국제조약 및 유엔안보리결의안',
+body:`<table><tr><th>협약명</th><th>연도</th><th>핵심 내용</th></tr>
+<tr><td>비엔나 협약</td><td>1988</td><td>마약 향정신성 물질 불법거래방지. <strong>마약 관련 ML만 범죄화</strong></td></tr>
+<tr><td>바젤위원회 선언</td><td>1988</td><td>BIS 바젤위원회. 은행제도의 범죄적 사용 방지</td></tr>
+<tr><td>EU 범죄수익규제협약</td><td>1990</td><td>범죄수익 추적·압수·몰수 국제협력</td></tr>
+<tr><td>UN 테러자금억제협약</td><td>1999</td><td>테러자금조달을 범죄화</td></tr>
+<tr><td>팔레모 협약</td><td>2000</td><td>국제 중대범죄·조직범죄 처벌. 국가 협력의무</td></tr>
+<tr><td>볼프스버그 준칙</td><td>2000</td><td>12개 글로벌 은행 연합체의 AML 준칙</td></tr>
+<tr><td>메리다 협약</td><td>2003</td><td>부패범죄 사법공조와 자산환수 국제협력</td></tr></table>
+<div class="theory-tip"><div class="tip-label">UN 안보리 결의안 암기</div>이란: UNSCR 1747·1803·1929 / 알카에다/탈레반: UNSCR 1267·1989·2253 / 북한: UNSCR 1718·1874</div>`},
+
+// ────── 과목1 Day3-5 FATF ──────
+{id:'T04',cat:'과목1 · Day3-5 FATF',
+title:'FATF 설립 목적·연혁 & 조직구조 ★최빈출',
+body:`<div class="key-point">1989년 G7 정상회담 합의로 설립</div>
+<div class="key-point">영역 확대: 마약('89) → 중대범죄 ML('96) → 테러자금조달('01) → WMD 확산금융('12)</div>
+<table><tr><th>조직/실무그룹</th><th>역할</th></tr>
+<tr><td>총회(Plenary)</td><td>최종 의사결정. <strong>연 3회(2/6/10월)</strong> 개최</td></tr>
+<tr><td>운영위원회(Steering Group)</td><td>핵심 의제 선정, 방향성 논의. <strong>총회 준비·운영 지원</strong></td></tr>
+<tr><td>ECG (평가·이행)</td><td>상호평가·후속조치 운영. 국제기준·평가방법론 발전</td></tr>
+<tr><td>PDG (정책개발)</td><td>국제기준 명확화·발전. 지침서 개발</td></tr>
+<tr><td>RTMG (유형론)</td><td>ML/TF 새로운 방법 점검. 정책 필요사항 제공</td></tr>
+<tr><td><strong>ICRG (국제협력점검)</strong></td><td><strong>고위험·비협조 국가 식별, 그레이리스트/블랙리스트 관리</strong></td></tr>
+<tr><td>GNCG (지역기구협력)</td><td>FSRBs 소속 국가들의 이행 지원</td></tr></table>
+<div class="warn-tip"><div class="tip-label">⚠ 핵심 함정</div>고위험국 가려내는 것 = <strong>ICRG</strong> (운영위원회 아님!)</div>`},
+
+{id:'T05',cat:'과목1 · Day3-5 FATF',
+title:'FATF 40 권고사항 전체 구조 ★필수 암기',
+body:`<table><tr><th>분류</th><th>주제</th><th>핵심 권고번호</th></tr>
+<tr><td>A</td><td>AML/CFT 정책·조정</td><td>R.1 위험평가·RBA, R.2 국가협력·조정</td></tr>
+<tr><td>B</td><td>자금세탁·몰수</td><td>R.3 ML범죄, R.4 몰수·잠정조치</td></tr>
+<tr><td>C</td><td>TF·확산금융</td><td>R.5 TF범죄, R.6 테러정밀제재, R.7 확산금융(PF), R.8 NPO</td></tr>
+<tr><td><strong>D</strong></td><td><strong>예방조치 (★최중요)</strong></td><td>R.9 금융기관비밀, R.10 CDD, R.12 PEP, R.15 가상자산, R.16 전신송금, R.20 STR</td></tr>
+<tr><td>E</td><td>법인·신탁 투명성</td><td>R.24 법인 실소유자, R.25 신탁</td></tr>
+<tr><td>F</td><td>권한당국 권한·책임</td><td>R.26~R.28 감독, R.29 FIU, R.32 현금반출입, R.35 제재</td></tr>
+<tr><td>G</td><td>국제협력</td><td>R.36 국제협정, R.37~38 사법공조, R.39 범죄인송환</td></tr></table>
+<div class="theory-tip"><div class="tip-label">핵심 권고 암기</div>R.1=RBA / R.10=CDD / R.12=PEP / R.15=가상자산 / R.16=전신송금 / R.20=STR / R.29=FIU / R.32=현금반출입</div>`},
+
+{id:'T06',cat:'과목1 · Day3-5 FATF',
+title:'핵심 권고사항 상세 (R.10, R.16, R.20, R.29)',
+body:`<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">R.10 CDD 이행 시점 (FATF 기준)</div>
+<div class="key-point">① 거래관계 수립 시 ② 일회성 거래(15,000 USD/EUR 초과) ③ ML/TF 의심 시 ④ 기존자료 의심 시</div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">R.16 전신송금/트래블룰</div>
+<div class="key-point">송금기관은 송금인·수취인 정보 수집·보관·전송. VASP에도 동일 적용</div>
+<div class="key-point">2025.6 총회 전면개정: '전신송금' → '결제/가치이전', 가상자산 포함, <strong>2030년 이행기한</strong></div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">R.20 STR</div>
+<div class="key-point">범죄수익·TF 연관 의심 시 FIU에 보고. <strong>미수거래 포함. 금액 무관</strong></div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">R.29 FIU</div>
+<div class="key-point">STR 수집·분석·제공 담당 중앙행정기관</div>
+<div class="danger-point">FIU는 수사권·기소권 없음! 정보 수집·분석·제공 기능만 수행</div>`},
+
+// ────── 과목1 Day7-9 평가 ──────
+{id:'T07',cat:'과목1 · Day7-9 평가방법론',
+title:'FATF 평가방법론 — TC & IO ★빈출',
+body:`<table><tr><th>구분</th><th>기술적 평가(TC)</th><th>효과성 평가(IO)</th></tr>
+<tr><td>평가대상</td><td>40개 권고사항의 법·제도 구축</td><td>11개 즉시성과(IO)의 실제 작동성</td></tr>
+<tr><td>평가등급</td><td><strong>C / LC / PC / NC</strong></td><td><strong>HE / SE / ME / LE</strong></td></tr>
+<tr><td>핵심 질문</td><td>법과 제도가 있는가? (What)</td><td>제도가 얼마나 잘 작동하는가? (How)</td></tr></table>
+<br>
+<table><tr><th>후속조치 유형</th><th>TC 기준</th><th>IO 기준</th></tr>
+<tr><td>정규 후속점검</td><td>PC/NC 8개 미만, 핵심권고 5개 모두 C/LC</td><td>HE/SE 5개 이상</td></tr>
+<tr><td>강화된 후속점검</td><td>PC/NC 8개 이상 또는 핵심권고 1개 PC/NC</td><td>HE/SE 3~4개이고 LE 6개 미만</td></tr>
+<tr><td>ICRG 후속점검</td><td>PC/NC 20개 이상 또는 핵심권고 3개 이상 PC/NC</td><td>LE 2개 이상+LE/ME 9개 이상, 또는 LE 6개 이상</td></tr></table>`},
+
+{id:'T08',cat:'과목1 · Day7-9 평가방법론',
+title:'FATF 상호평가 라운드별 특징 ★최빈출',
+body:`<table><tr><th>라운드</th><th>주기</th><th>핵심 키워드</th></tr>
+<tr><td>1차</td><td>1990-1995</td><td>마약 관련 범죄자금 규제, STR <strong>선택</strong>사항</td></tr>
+<tr><td>2차</td><td>1996-2003</td><td>중대범죄로 확대, <strong>STR 보고 의무화</strong>, NCCT 발표</td></tr>
+<tr><td>3차</td><td>2004-2012</td><td>테러 포함, <strong>FIU 설치 의무화</strong>, 9개 특별권고, DNFBPs</td></tr>
+<tr><td>4차</td><td>2014-2022</td><td><strong>RBA 전면 도입, 효과성 평가(IO)</strong>, WMD 확산금융, 법인 실소유자</td></tr>
+<tr><td>5차</td><td>2025~</td><td><strong>성과 중심 평가</strong>, 3년내 핵심 로드맵, 사이버사기·가상자산</td></tr></table>
+<div class="key-point">한국 4차(2019년) → <strong>강화된 후속점검</strong> → 2024.10월 <strong>정규 후속점검으로 상향!</strong></div>
+<div class="key-point">한국 5차 평가: <strong>2028년 3월</strong> 예정</div>
+<div class="theory-tip"><div class="tip-label">★ 암기 TIP</div>마약→중대범죄+STR의무→테러+FIU의무→RBA+효과성→성과중심</div>`},
+
+// ────── 과목1 Day10 최신 ──────
+{id:'T09',cat:'과목1 · Day10 2026년 최신',
+title:'2026년 2월 FATF 총회 주요 결과 ★최신 출제',
+body:`<div class="key-point"><strong>장소·일정</strong>: 2026.2.11~13, 멕시코시티 / 의장국: 멕시코 (Elisa de Anda Madrazo) 5차 총회</div>
+<div class="key-point"><strong>그레이리스트 신규 추가</strong>: 쿠웨이트, 파푸아뉴기니</div>
+<div class="key-point">알제리, 나미비아 → 현장실사(on-site) 단계 진입</div>
+<div class="key-point"><strong>블랙리스트</strong>: 북한(PF 리스크 경고 강화), 이란(대응조치 유지), 미얀마(EDD 유지, 2026.6까지 미진전 시 대응조치 검토)</div>
+<div class="key-point">5차 라운드 보고서 채택: <strong>오스트리아, 이탈리아, 싱가포르</strong> (2026.4~5월 공표)</div>
+<div class="key-point"><strong>사이버 기반 사기(Cyber-enabled fraud)</strong> 신규 보고서 채택 — 글로벌 영향력 공식 인정</div>
+<div class="key-point">역외 VASP 규제 격차, 스테이블코인·언호스티드 월렛 위험 분석 2건 승인</div>
+<div class="key-point">FSRBs 발언권 강화 조치 합의</div>
+<div class="key-point">차기 의장: <strong>영국 Giles Thomson</strong> (2026.7~2028.6 임기, 2025.7부터 부의장 재임)</div>
+<div class="key-point">러시아: FATF 회원자격 정지 <strong>2024.2부터 지속 중</strong></div>`},
+
+{id:'T10',cat:'과목1 · Day10 2026년 최신',
+title:'EU AMLD 발전 경과 & FSRBs · 에그몽 그룹',
+body:`<table><tr><th>차수</th><th>연도</th><th>핵심 내용</th></tr>
+<tr><td>1차</td><td>1991</td><td>자금세탁범죄 대응 최초 지침</td></tr>
+<tr><td>2차</td><td>2001</td><td>중대범죄 확대, DNFBP AML 의무</td></tr>
+<tr><td>3차</td><td>2005</td><td>테러자금 포함, 실소유자 확인·검증 의무화, CDD RBA 적용</td></tr>
+<tr><td>4차</td><td>2015</td><td><strong>10,000유로 강화, 조세범죄 포함, 국내외 모든 PEP</strong>, 도박서비스업체 확대</td></tr>
+<tr><td>5차</td><td>2018</td><td><strong>가상자산(암호화폐) 규제, 실소유자 등기소 공개 접근</strong></td></tr>
+<tr><td>6차</td><td>-</td><td>고액현금거래 기준 10,000유로</td></tr></table>
+<div class="key-point">AMLA: EU 자금세탁방지감독기관 (2024년 발족, <strong>독일 프랑크푸르트</strong>). 2028.1부터 40곳 직접감독</div>
+<div class="key-point">AMLR: EU 직접 적용 규정 (국내법 전환 없이 직접 적용)</div>
+<div class="key-point">FSRBs: FATF 스타일 지역기구. <strong>한국은 APG(Asia Pacific Group)</strong> 소속</div>
+<div class="key-point">에그몽 그룹: FIU 국제 네트워크. 한국 KoFIU <strong>2002년 6월</strong> 가입</div>`},
+
+// ────── 과목1 Day11 주요국 감독기관 ──────
+{id:'T11',cat:'과목1 · Day11 주요국 감독기관',
+title:'미국·EU·영국 AML/CFT 감독기관',
+body:`<table><tr><th>국가</th><th>기관</th><th>역할</th></tr>
+<tr><td rowspan="4">미국</td><td><strong>FinCEN</strong></td><td>미국 FIU. 재무부 소속. BSA 보고 수집·분석</td></tr>
+<tr><td><strong>OFAC</strong></td><td>재무부 소속. 경제·무역 제재, <strong>SDN 리스트 운영</strong></td></tr>
+<tr><td>OCC</td><td>통화감독청. 연방 은행 인가·감독</td></tr>
+<tr><td>SEC / CFTC</td><td>증권거래위원회 / 상품선물거래위원회</td></tr>
+<tr><td rowspan="2">EU</td><td>EBA</td><td>유럽은행감독청</td></tr>
+<tr><td><strong>AMLA</strong></td><td>EU 자금세탁방지감독기관 (2024 발족, 프랑크푸르트)</td></tr>
+<tr><td rowspan="2">영국</td><td><strong>FCA</strong></td><td>금융행위감독청. AML/CFT 감독 주관</td></tr>
+<tr><td>NCA</td><td>국가범죄수사청. <strong>영국 FIU 기능</strong></td></tr></table>`},
+
+// ────── 과목1 Day13-14 국내 법률 ──────
+{id:'T12',cat:'과목1 · Day13-14 국내 법률체계',
+title:'국내 법률체계 구분 (보고제도 vs 처벌제도)',
+body:`<table><tr><th>구분</th><th>법률명</th><th>핵심 내용</th></tr>
+<tr><td rowspan="2"><strong>보고제도</strong></td><td>금융실명법</td><td>실지명의 확인, 차명거래 금지. <strong>1993.8.12 김영삼 정부 긴급명령</strong></td></tr>
+<tr><td>특정금융정보법</td><td>STR/CTR 보고, CDD, FIU 운영 근거</td></tr>
+<tr><td rowspan="3"><strong>처벌제도</strong></td><td>범죄수익은닉규제법</td><td>전제범죄 <strong>열거주의</strong>, 범죄수익 몰수·추징. 2001년 시행. 은닉·가장: 5년 이하/3천만원</td></tr>
+<tr><td>테러자금금지법</td><td>TF 처벌, 금융거래제한대상자, <strong>50% 룰</strong>. TF: 10년/1억원</td></tr>
+<tr><td>마약거래방지법</td><td>마약 관련 자금세탁 처벌</td></tr></table>
+<div class="key-point"><strong>50% 룰</strong>: 금융거래제한대상자가 단독·공동으로 <strong>50% 이상 소유·지배</strong>하는 법인·단체도 제한 대상</div>
+<div class="key-point">TF 미수범도 처벌! 예비·음모: 3년 이하 징역/3천만원. 징역+벌금 병과 가능</div>`},
+
+// ────── 과목1 Day15 특금법 ──────
+{id:'T13',cat:'과목1 · Day15 특정금융정보법',
+title:'특정금융정보법 발전 경과 & STR vs CTR ★최중요',
+body:`<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">특금법 발전 경과</div>
+<div class="key-point">2001년: 특금법 시행, FIU 설립</div>
+<div class="key-point">2005년: CDD, CTR 도입</div>
+<div class="key-point">2008년: 카지노(DNFBPs) AML 의무 부과</div>
+<div class="key-point">2013년: <strong>STR 기준금액 폐지</strong></div>
+<div class="key-point">2014년: 불법차명거래 STR 의무, 실제소유자 확인 의무화</div>
+<div class="key-point">2021년: VASP 신고제 도입, 과태료 상향</div>
+<div class="key-point">2022년: 트래블룰 시행 (100만원 이상 가상자산 이전)</div>
+<div class="key-point">2024년: 가상자산이용자보호법 시행(7월), 업무규정 개정(11월)</div>
+<div class="key-point">2026년: 특금법 개정안 국회 통과(1.29), 8월 시행 예정 (VASP 대주주 적격심사제)</div>
+<br>
+<table><tr><th>구분</th><th>STR</th><th>CTR</th></tr>
+<tr><td>기준금액</td><td><strong>없음 (2013년 폐지)</strong></td><td><strong>1,000만원</strong> (외화 1만달러)</td></tr>
+<tr><td>보고기한</td><td><strong>3영업일</strong> (보고책임자 결정 후)</td><td><strong>30일</strong> (거래발생일, 달력일)</td></tr>
+<tr><td>기산방식</td><td>초일불산입</td><td>초일불산입</td></tr>
+<tr><td>합산</td><td>-</td><td>입금·출금 <strong>각각 별도 합산</strong></td></tr></table>`},
+
+{id:'T14',cat:'과목1 · Day15 특정금융정보법',
+title:'STR 기준금액 변천사 & CTR 보고기한 계산',
+body:`<div class="key-point"><strong>STR 기준금액 변천</strong>: 2001년(5천만원) → 2004년(2천만원) → 2008년(1천만원) → 2013년 폐지</div>
+<div class="warn-tip"><div class="tip-label">⚠ 함정 주의</div>2005년 3천만원 아님! <strong>2004년 2천만원</strong>이 정확!</div>
+<br>
+<div style="font-weight:700;margin-bottom:8px;">CTR 보고기한 계산 예시 ★빈출</div>
+<div class="key-point">거래일 4월 4일(목) → 30일째 = 5월 4일(토) → 5월 5일(일) → 5월 6일(대체휴일) → <strong>보고기한 = 5월 7일(화)</strong></div>
+<div class="theory-tip"><div class="tip-label">★ 규칙</div>기한일이 휴일(토·일·공휴일)이면 <strong>다음 영업일까지 연장!</strong></div>
+<br>
+<div class="key-point">VASP 거래기록 보관: <strong>15년</strong> (특금법)</div>`},
+
+// ────── 과목1 Day18 과태료 ──────
+{id:'T15',cat:'과목1 · Day18 과태료·벌칙',
+title:'과태료 부과기준 (별표2) ★최빈출 필수 암기',
+body:`<table><tr><th>위반행위</th><th>과태료</th><th>법상한</th></tr>
+<tr><td>CTR 미보고</td><td style="color:var(--accent3)"><strong>900만원</strong></td><td>3,000만원</td></tr>
+<tr><td>STR 미보고</td><td style="color:var(--warn)"><strong>1,800만원</strong></td><td>3,000만원</td></tr>
+<tr><td>CDD 미수행</td><td style="color:var(--warn)"><strong>1,800만원</strong></td><td>3,000만원</td></tr>
+<tr><td>자료보존 미이행</td><td style="color:var(--warn)"><strong>1,800만원</strong></td><td>3,000만원</td></tr>
+<tr><td>내부통제·보고책임자·업무지침·교육 위반</td><td style="color:var(--accent2)"><strong>6,000만원</strong></td><td>1억원</td></tr>
+<tr><td>EDD 미수행</td><td style="color:var(--accent2)"><strong>6,000만원</strong></td><td>1억원</td></tr>
+<tr><td>가상자산사업자 조치 미이행</td><td style="color:var(--accent2)"><strong>6,000만원</strong></td><td>1억원</td></tr>
+<tr><td>검사 거부·방해·기피</td><td style="color:var(--danger)"><strong>1억원</strong></td><td>1억원</td></tr></table>
+<div class="theory-tip"><div class="tip-label">★ 암기</div>CTR=900 / STR·CDD·자료=1,800 / 내부통제·EDD·VASP=6,000 / 검사거부=<strong>1억</strong></div>
+<div class="key-point">과태료 가중: <strong>2분의 1</strong> 범위 (4분의 1 아님!) / 법정상한 초과 불가</div>
+<div class="key-point">기관 제재: 최근 3년내 4회 이상 기관주의 이상 → 1단계 가중</div>
+<div class="key-point">제재심의위원회: 10인 이내 민간위원, 2인 이상 포함 개의</div>`},
+
+{id:'T16',cat:'과목1 · Day18 과태료·벌칙',
+title:'벌칙 정리 & 제재체계',
+body:`<table><tr><th>위반행위</th><th>벌칙</th></tr>
+<tr><td>VASP 미신고 영업</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
+<tr><td>STR 정보누설·목적외 사용</td><td><strong>5년 이하 징역 또는 5천만원 이하 벌금</strong></td></tr>
+<tr><td>VASP 변경신고 미이행</td><td>3년 이하 징역 또는 3천만원 이하 벌금</td></tr>
+<tr><td>범죄수익 은닉·가장</td><td>5년 이하 징역 또는 3천만원 이하 벌금</td></tr>
+<tr><td>STR/CTR <strong>거짓 보고</strong></td><td><strong>1년 이하 징역 또는 1천만원 이하 벌금</strong></td></tr>
+<tr><td>TF 자금조달</td><td>10년 이하 징역 또는 1억원 이하 벌금</td></tr>
+<tr><td>TF 예비·음모</td><td>3년 이하 징역 또는 3천만원 이하 벌금</td></tr></table>
+<br>
+<div class="key-point">기관제재: 시정명령, 영업정지요구, 과태료, 기관경고·주의</div>
+<div class="key-point">임원제재: 해임권고, 직무정지, 문책경고, 주의적 경고, 주의</div>
+<div class="key-point">직원제재: 면직, 정직, 감봉, 견책, 주의</div>`},
+
+// ────── 과목1 Day19-20 TBML VASP ──────
+{id:'T17',cat:'과목1 · Day19-20 TBML·VASP',
+title:'무역기반자금세탁(TBML) 4대 유형',
+body:`<table><tr><th>유형</th><th>방법</th><th>예시</th></tr>
+<tr><td>과대송장 (Over-invoicing)</td><td>실제보다 높은 금액으로 송장 발행</td><td>100만달러 물품을 200만달러로 → 차액 100만달러 세탁</td></tr>
+<tr><td>과소송장 (Under-invoicing)</td><td>실제보다 낮은 금액으로 송장 발행</td><td>수출국에서 차액 확보</td></tr>
+<tr><td>다중송장 (Multiple-invoicing)</td><td>동일 거래에 여러 송장 발행</td><td>이중청구로 자금 이중 이전</td></tr>
+<tr><td>허위송장 (Fictitious-invoicing)</td><td>실제 거래 없이 가짜 송장 발행</td><td>유령거래(Phantom Shipment)</td></tr></table>
+<div class="key-point">허위기재(Falsely Described): 물품 종류·수량·품질 허위 기재. 의류를 전자제품으로 기재</div>
+<div class="key-point">2024년 관세청 TBML 적발액: <strong>9,062억원</strong> (전년 대비 90% 급증)</div>
+<div class="warn-tip"><div class="tip-label">⚠ 시험 포인트</div>가상자산을 이용한 환치기는 TBML이 아닌 '가상자산 기반 자금세탁'으로 분류!</div>`},
+
+{id:'T18',cat:'과목1 · Day19-20 TBML·VASP',
+title:'VASP 규제 3대 법령 & 트래블룰',
+body:`<table><tr><th>법령</th><th>핵심</th><th>시행일</th></tr>
+<tr><td>특정금융정보법</td><td>VASP 신고제, CDD/CTR/STR 의무, 트래블룰</td><td>2021.3.25</td></tr>
+<tr><td>가상자산이용자보호법</td><td>자산 분리보관, 콜드월렛 <strong>80% 이상</strong>, 불공정거래 규제</td><td>2024.7.19</td></tr>
+<tr><td>특금법 개정(2026)</td><td>VASP 대주주 적격심사제, 신고 불수리 확대, 퇴직자 제재 통보</td><td>2026.8 예정</td></tr></table>
+<div class="key-point"><strong>트래블룰</strong>: 100만원 이상 가상자산 이전 시 적용. 송신인 성명·주소·생년월일 / 수신인 성명·주소 전달</div>
+<div class="key-point">비호스팅 지갑(메타마스크 등): 트래블룰 면제 아님! 추가 위험관리 필요</div>
+<div class="key-point">VASP CTR 면제 제외 (고위험 업종). 국내 VASP 신고: 실명확인 입출금계좌 + ISMS 인증</div>
+<div class="key-point">EU MiCA: 2024.12.30 전면시행. CASP 라이선스. 위반 시 매출 3~12.5% 과징금</div>
+<div class="key-point">가상자산이용자보호법 과징금: 위반이익 2배 이하, 최대 40억원</div>`},
+
+// ────── 과목1 Day22 FIU ──────
+{id:'T19',cat:'과목1 · Day22 FIU',
+title:'FIU(금융정보분석원) 기능·조직·검사수탁기관',
+body:`<div class="key-point"><strong>FIU</strong>: 2001.11 설립. 금융위원회 소속. 독립적 사무수행. 직원 겸직 금지</div>
+<div class="danger-point">FIU는 수사권·기소권 없음! 정보 수집·분석·제공만</div>
+<br>
+<table><tr><th>부서</th><th>역할</th></tr>
+<tr><td>기획행정실</td><td>기획·행정, 법령·규정, <strong>국제협력</strong>, 전산정보</td></tr>
+<tr><td>제도운영과</td><td>감독검사, 보고제도, 교육홍보</td></tr>
+<tr><td>가상자산검사과</td><td>VASP 관리·감독, 검사제재, 신고수리 (2021년 신설)</td></tr>
+<tr><td>심사분석실</td><td>심사총괄, 배정/제공, 국내분석, 전략분석</td></tr></table>
+<div class="warn-tip"><div class="tip-label">⚠ 함정</div>해외협력은 기획행정실 업무! (제도운영과 아님)</div>
+<br>
+<table><tr><th>검사수탁기관</th><th>담당 업종</th></tr>
+<tr><td><strong>금감원</strong></td><td>은행/증권/보험/전자금융/가상자산 등</td></tr>
+<tr><td><strong>관세청</strong></td><td>환전업자</td></tr>
+<tr><td>행정안전부</td><td>새마을금고중앙회</td></tr>
+<tr><td>중소벤처기업부</td><td>벤처캐피탈</td></tr>
+<tr><td><strong>제주도청</strong></td><td>제주도 소재 카지노</td></tr></table>`},
+
+{id:'T20',cat:'과목1 · Day22 FIU',
+title:'위험관리수준 평가 (종합평가 & 제도이행평가)',
+body:`<div class="key-point"><strong>종합평가</strong>: 연 1회. 전 업권 공통 AML 규정 이행여부, FIU 분석률 등 지표 → 포상 등 전 업권 비교</div>
+<div class="key-point"><strong>위험관리평가(제도이행평가)</strong>: 반기별. 고유위험(위험노출도) + 운영위험(위험관리도). 고유위험·운영위험 각 5단계 등급</div>
+<div class="key-point">업무규정 개정 핵심: 종합평가(제18조) → '실시하여야 한다'로 강화</div>
+<div class="key-point">위험관리수준평가(제19조) 신설 → 위험평가 결과 문서화, 최신상태 유지, FIU·검사수탁기관에 제공</div>
+<br>
+<div class="theory-tip"><div class="tip-label">2024.11 업무규정 개정 핵심</div>업무지침 이사회 의결 의무화 / 보고책임자 최소직위 요건 (은행: 이사/업무집행책임자) / <strong>AML 경력 2년 이상</strong> 의무화</div>`},
+
+// ────── 과목2 Day1 자금세탁 위험 ──────
+{id:'T21',cat:'과목2 · Day1-5 자금세탁위험',
+title:'자금세탁 위험과 방법 — 업권별 위험 (Day3)',
+body:`<table><tr><th>업권</th><th>주요 위험</th><th>시험 포인트</th></tr>
+<tr><td>은행</td><td>다양한 상품·채널, 해외송금, 대포통장</td><td>CDD 이행시기, 비대면 이중확인</td></tr>
+<tr><td>증권</td><td>차명거래, FIU 미보고, 해외계좌 연계</td><td>타인 명의 거래, 비상장주식 이상매매</td></tr>
+<tr><td>보험</td><td>고액 일시납, 조기해지, 수익자 변경</td><td>CDD 위탁 취약, CTR 누락</td></tr>
+<tr><td>저축은행</td><td>대출 관련 현금거래, 금융취약계층</td><td>대위변제 시 CTR 보고자 판단</td></tr>
+<tr><td>가상자산(VASP)</td><td>익명성, 국경 초월, 트래블룰 회피</td><td>100만원 기준, 비호스팅 지갑 위험</td></tr>
+<tr><td>카지노</td><td>칩 구매-환전 세탁, 고액현금</td><td>CTR 면제 제외, 칩 교환 기록</td></tr></table>
+<div class="key-point">보이스피싱 5대 자금경로: ①가상화폐 환전 ②명품·상품권 구매후 되팔기 ③유령법인 계좌 ④도박사이트 충전환전 ⑤대포통장</div>
+<div class="key-point">한국 NRA 고위험 9대 분야: 사기(보이스피싱)·마약·도박·횡령배임·조세범죄·불법외환·부패·TBML·가상자산</div>`},
+
+// ────── 과목2 Day2 글로벌·한국 ──────
+{id:'T22',cat:'과목2 · Day1-5 자금세탁위험',
+title:'USDT 환치기 사례 & 가상자산 위험',
+body:`<div class="theory-tip"><div class="tip-label">💡 시나리오: USDT 환치기 사례</div>중국인 브로커가 한국 거래소에서 USDT 구매 → 중국 거래소로 전송 → 위안화 환전. 2018~2025년 적발: 약 14조원, 272건</div>
+<div class="warn-tip"><div class="tip-label">⚠ 시험 포인트</div>가상자산 이용 환치기 = TBML 아님! → '가상자산 기반 자금세탁'으로 분류</div>
+<br>
+<div class="key-point">FATF 한국 4차 상호평가(2019): 강화된 후속점검 대상 / 2024.10 정규 후속점검으로 상향</div>
+<div class="key-point">한국 5차 상호평가 예정: <strong>2028년 3월</strong></div>
+<div class="key-point">FATF 상호평가 등급: 준수(C) > 대체로 준수(LC) > 부분 준수(PC) > 미준수(NC)</div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">FATF 핵심 권고사항 (시험 빈출)</div>
+<div class="key-point">R.1(위험평가·RBA) / R.10(CDD) / R.15(가상자산) / R.16(전신송금) / R.20(STR) / R.32(현금운반)</div>
+<div class="key-point">ICRG: 고위험·비협조 국가를 가려내는 역할 (운영위원회가 아님!)</div>`},
+
+// ────── 과목2 Day6-8 위험평가 ──────
+{id:'T23',cat:'과목2 · Day6-8 위험평가(RA)',
+title:'위험기반접근법(RBA) & 전사적 위험평가(ERA)',
+body:`<div class="key-point">RBA = FATF R.1 핵심 원칙: 고위험에 더 많은 자원 집중, 저위험에 간소화 조치 적용</div>
+<div class="key-point">2025.2 FATF R.1 개정: <strong>commensurate → proportionate</strong>로 변경. 저위험 간소화 의무화. RBA 양방향 적용 강화</div>
+<table><tr><th>위험 유형</th><th>정의</th><th>관계</th></tr>
+<tr><td>고유위험(Inherent Risk)</td><td>내부통제 전 본질적 위험</td><td rowspan="3">잔여위험 = 고유위험 × (1-통제효과)</td></tr>
+<tr><td>통제위험(Control Risk)</td><td>내부통제 장치의 효과성</td></tr>
+<tr><td>잔여위험(Residual Risk)</td><td>내부통제 후 남은 위험</td></tr></table>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">전사적 위험평가(ERA) 4단계</div>
+<div class="key-point"><strong>1단계</strong>: 위험 식별 — 고객·상품·채널·국가별 ML/TF 위험 파악</div>
+<div class="key-point"><strong>2단계</strong>: 위험 분석 — 발생 가능성과 영향도 분석</div>
+<div class="key-point"><strong>3단계</strong>: 위험 경감 — 내부통제 조치 수립·적용</div>
+<div class="key-point"><strong>4단계</strong>: 모니터링·보고 — 잔여위험 관리, 정기 재평가</div>`},
+
+{id:'T24',cat:'과목2 · Day6-8 위험평가(RA)',
+title:'제도이행평가(KoFIU) & 고객위험등급 분류',
+body:`<div class="key-point">KoFIU 제도이행평가: 총 111개 세부지표 (고유위험 지표 + 운영위험 지표)</div>
+<table><tr><th>등급</th><th>대상</th><th>조치</th></tr>
+<tr><td>고위험</td><td>PEP, 비거주 외국인, FATF 고위험국, VASP, 비대면</td><td>EDD 적용, 상위자 승인, 모니터링 강화</td></tr>
+<tr><td>중위험</td><td>일반 법인, 중간 규모 현금거래 사업자</td><td>표준 CDD, 정기 재점검</td></tr>
+<tr><td>저위험</td><td>상장기업, 정부기관, 장기 정상거래 고객</td><td>SDD 적용 가능, 재이행 주기 연장</td></tr></table>
+<div class="theory-tip"><div class="tip-label">STR 제도이행평가 핵심 배점</div>STR 기초분석률(20점) / <strong>STR 상세분석률(40점 — 최고 배점)</strong> / STR 신속성 / STR Rule 관리기준</div>`},
+
+// ────── 과목2 Day9-17 CDD ──────
+{id:'T25',cat:'과목2 · Day9-17 CDD',
+title:'CDD 의의 & 이행 시기 4가지 ★반드시 암기',
+body:`<div class="theory-tip"><div class="tip-label">CDD란?</div>'당신은 누구이고(신원), 왜 이 거래를 하며(목적), 이 돈은 어디서 왔나요?(자금출처)' 를 확인하는 의무</div>
+<table><tr><th>이행 시기</th><th>기준금액</th></tr>
+<tr><td>① 계좌 신규 개설</td><td><strong>금액 무관</strong></td></tr>
+<tr><td>② 일회성 금융거래 (계좌 미보유)</td><td>원화 <strong>1천만원</strong> / 외화 <strong>1만달러</strong> 이상</td></tr>
+<tr><td>③ 자금세탁 등의 우려</td><td><strong>금액 무관</strong></td></tr>
+<tr><td>④ 기존 CDD 정보 불일치 우려</td><td><strong>금액 무관</strong></td></tr></table>
+<div class="warn-tip"><div class="tip-label">⚠ 시험 함정</div>계좌 미보유 고객 800만원 무통장입금 → CDD 불요 (기준금액 1천만원 미달)</div>
+<div class="warn-tip"><div class="tip-label">⚠ 시험 함정</div>CDD 거부 시 → 신규거래 거절 / 기존거래 종료. 법적 의무(특금법 제5조의2 제4항)!</div>
+<br>
+<table><tr><th>확인 항목</th><th>개인고객</th><th>법인고객</th></tr>
+<tr><td>신원확인</td><td>성명, 주민번호, 주소, 연락처</td><td>법인명, 사업자번호, 대표자, 본점주소</td></tr>
+<tr><td>거래목적</td><td>급여이체, 투자, 생활자금</td><td>사업자금, 무역대금, 투자</td></tr>
+<tr><td>자금출처</td><td>근로소득, 사업소득, 부동산 매각</td><td>매출대금, 투자금, 대출금</td></tr></table>`},
+
+{id:'T26',cat:'과목2 · Day9-17 CDD',
+title:'실소유자(BO) 확인 3순위 & EDD 대상 8가지',
+body:`<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">실소유자 확인 3순위</div>
+<table><tr><th>순위</th><th>기준</th><th>대상</th></tr>
+<tr><td>1순위</td><td>25% 이상 지분(의결권) 보유자</td><td>주주명부 기준 25% 이상 소유 자연인</td></tr>
+<tr><td>2순위</td><td>1순위 확인 불가 시</td><td>임원, 대표이사 등 실질 지배자</td></tr>
+<tr><td>3순위</td><td>1~2순위 모두 불가 시</td><td>대표이사 또는 업무집행사원</td></tr></table>
+<div class="danger-point">면제 대상: 국가·지자체, 금융위 감독 금융회사, <strong>상장법인</strong>. '상장법인도 확인해야 한다' → 오답!</div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">EDD 대상 8가지</div>
+<div class="key-point">① PEP(정치적 주요인물) 및 가족·측근 — 자금출처·거래목적 상세, 상위자 승인</div>
+<div class="key-point">② FATF 지정 고위험·비협조 국가 고객 — 강화된 자금출처 확인</div>
+<div class="key-point">③ 비거주 외국인 — 체류목적·소득원 확인</div>
+<div class="key-point">④ 비대면 거래 고객 — 이중확인(필수) + 다중확인(권고)</div>
+<div class="key-point">⑤ VASP — 사업현황·자금흐름 확인</div>
+<div class="key-point">⑥ 소유구조 복잡한 법인 — 최종 실소유자 확인 강화</div>
+<div class="key-point">⑦ 고위험으로 평가된 고객 ⑧ 자금세탁 우려 고객</div>`},
+
+{id:'T27',cat:'과목2 · Day9-17 CDD',
+title:'비대면 CDD 이중·다중확인 & CDD 재이행',
+body:`<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">비대면 이중확인 (2024.2 유권해석 기준)</div>
+<table><tr><th>구분</th><th>방법</th><th>비고</th></tr>
+<tr><td><strong>이중확인 (필수)</strong></td><td>①신분증 사본 제출 ②영상통화 ③접근매체 전달 시 확인 ④기존계좌 활용 ⑤기타(바이오인증)</td><td>①~⑤ 중 <strong>2가지 의무 선택</strong></td></tr>
+<tr><td>다중확인 (권고)</td><td>⑥타기관 확인결과(휴대폰인증) ⑦다수 개인정보 검증</td><td>이미 선택한 2가지 제외 후 추가</td></tr></table>
+<div class="danger-point">공동인증서는 ①~⑤에 해당 없음! 단독으로 충족 불가. 기존계좌 활용만으론 이중확인 불충분!</div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">CDD 재이행 주기</div>
+<table><tr><th>위험등급</th><th>주기</th></tr>
+<tr><td>고위험</td><td><strong>1년</strong></td></tr>
+<tr><td>중위험</td><td><strong>2년</strong></td></tr>
+<tr><td>저위험</td><td><strong>3년</strong></td></tr></table>
+<div class="key-point">Trigger-based: 업종변경, 실소유자 변경, 부정적 언론보도, 압수수색 영장 접수 → 즉시</div>
+<div class="danger-point">내점 시에만 수행? → 실효성 없음. 금감원 검사에서 지적 대상!</div>`},
+
+{id:'T28',cat:'과목2 · Day9-17 CDD',
+title:'간소화CDD(SDD) & 대리인 CDD & 두나무 사례',
+body:`<div class="key-point"><strong>SDD(간소화 CDD)</strong>: 저위험 고객에게 CDD 절차 일부 간소화 가능. 단, 최소한의 신원확인은 반드시 수행</div>
+<div class="key-point"><strong>대리인 CDD 3가지</strong>: ①대리인 본인 신원확인 ②대리권한 확인(위임장 등) ③실제 거래당사자(본인) CDD — 모두 수행!</div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">두나무(업비트) 과태료 352억원 사건 (2025.11)</div>
+<table><tr><th>위반사항</th><th>규모</th></tr>
+<tr><td>CDD 미이행</td><td>약 530만건</td></tr>
+<tr><td>거래제한 미이행</td><td>약 330만건</td></tr>
+<tr><td>STR 미보고</td><td>약 15건</td></tr>
+<tr><td><strong>과태료 합계</strong></td><td><strong>352억원 (역대 최대)</strong></td></tr></table>
+<div class="key-point">2025.2 영업 일부정지 3개월 + 임직원 제재 先부과 후 2025.11 과태료 352억원 추가</div>`},
+
+// ────── 과목2 Day18-27 CTR STR ──────
+{id:'T29',cat:'과목2 · Day18-27 CTR·STR',
+title:'CTR 기초 — 보고기준 5요소 & 현금 해당 여부',
+body:`<div class="theory-tip"><div class="tip-label">CTR이란?</div>자금세탁 여부와 관계없이 1천만원 이상 현금거래를 객관적 기준으로 KoFIU에 보고. 직원 주관 판단 불필요</div>
+<table><tr><th>요소</th><th>기준</th><th>주의사항</th></tr>
+<tr><td>①동일 금융회사</td><td>같은 회사 모든 지점 포함</td><td>다른 은행 간 합산 안 함</td></tr>
+<tr><td>②동일인 명의</td><td>거래의 실제 상대방 기준</td><td>대위변제 시 대위변제자가 기준</td></tr>
+<tr><td>③1거래일</td><td>달력 기준 하루(0시~24시)</td><td>영업일 아닌 달력일!</td></tr>
+<tr><td>④현금의 지급·영수</td><td>물리적 현금 이동만</td><td>이체·수표 제외</td></tr>
+<tr><td>⑤합산 1천만원 이상</td><td>영수·지급 각각 별도 합산</td><td>2019.7.1~ 현행</td></tr></table>
+<br>
+<table><tr><th>거래</th><th>CTR 해당</th></tr>
+<tr><td>창구 현금 입출금</td><td style="color:var(--accent3)">✓ 해당</td></tr>
+<tr><td>ATM 현금 입출금</td><td style="color:var(--accent3)">✓ 해당</td></tr>
+<tr><td>계좌이체(인터넷뱅킹)</td><td style="color:var(--danger)">✗ 미해당</td></tr>
+<tr><td>자기앞수표</td><td style="color:var(--danger)">✗ 미해당 (수표임)</td></tr>
+<tr><td>외화(원화 환전 전)</td><td style="color:var(--danger)">✗ 미해당</td></tr>
+<tr><td>외화→원화 환전 후 인출</td><td style="color:var(--accent3)">✓ 원화현금 해당</td></tr></table>`},
+
+{id:'T30',cat:'과목2 · Day18-27 CTR·STR',
+title:'CTR 면제대상 & 합산 제외 & 실전 유권해석 Q&A',
+body:`<table><tr><th>면제 대상</th><th>여부</th></tr>
+<tr><td>국가·지방자치단체</td><td style="color:var(--accent3)">✓ 면제</td></tr>
+<tr><td>다른 금융회사와의 거래</td><td style="color:var(--accent3)">✓ 면제 (카지노·VASP 제외)</td></tr>
+<tr><td>금융감독원, 한국은행</td><td style="color:var(--accent3)">✓ 면제</td></tr>
+<tr><td><strong>공공단체</strong></td><td style="color:var(--danger)">✗ <strong>2019.7.1부터 면제 제외!</strong></td></tr>
+<tr><td>카지노사업자·VASP</td><td style="color:var(--danger)">✗ 고위험 업종 면제 제외</td></tr></table>
+<div class="key-point">합산 제외 3가지: ①100만원 이하 원화 송금·무통장입금 ②100달러 이하 외환 매입·매각 ③공과금 납부</div>
+<br>
+<table><tr><th>유권해석 Q&A</th><th>답변</th></tr>
+<tr><td>외화예금에서 외화로 인출?</td><td>CTR 아님 (외화는 대상 아님)</td></tr>
+<tr><td>외화→원화 환전 후 인출?</td><td>CTR 해당 (원화 현금 지급)</td></tr>
+<tr><td>현금 50만+수표 100만원 송금?</td><td>현금 50만원만 합산</td></tr>
+<tr><td>출납과잉금?</td><td>내부 문제, 합산 제외</td></tr>
+<tr><td>가수금·별단예금 현금?</td><td>합산 대상</td></tr></table>`},
+
+{id:'T31',cat:'과목2 · Day18-27 CTR·STR',
+title:'STR 기초 — CTR vs STR 핵심 비교 & 보고 절차',
+body:`<table><tr><th>구분</th><th>CTR</th><th>STR</th></tr>
+<tr><td>기준</td><td>객관적(금액)</td><td>주관적(의심)</td></tr>
+<tr><td>금액</td><td>1천만원 이상 현금</td><td><strong>기준금액 없음</strong> (2013 폐지)</td></tr>
+<tr><td>보고기한</td><td>거래일부터 <strong>30일</strong></td><td>보고책임자 결정 후 <strong>3영업일</strong></td></tr>
+<tr><td>누설금지</td><td><strong>없음</strong></td><td><strong>있음 (5년/5천만원)</strong></td></tr>
+<tr><td>대상</td><td>현금거래만</td><td>모든 금융거래</td></tr>
+<tr><td>판단주체</td><td>시스템 자동</td><td>금융회사 종사자</td></tr></table>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">STR 보고 5단계</div>
+<div class="key-point">1단계: 이상거래 탐지 (시스템·직원 인지)</div>
+<div class="key-point">2단계: 1차 조사 — 20일 이내 잠재적 의심거래 여부 판단</div>
+<div class="key-point">3단계: 2차 상세조사 — 1차 후 20일 이내 STR 보고 여부 결정</div>
+<div class="key-point">4단계: 보고책임자 승인 (가급적 당일~익일)</div>
+<div class="key-point">5단계: KoFIU 보고 — <strong>보고책임자 결정 후 3영업일 이내</strong></div>`},
+
+{id:'T32',cat:'과목2 · Day18-27 CTR·STR',
+title:'STR 빈출 시나리오 & 누설금지(Tipping-off)',
+body:`<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">STR 보고 필요 시나리오</div>
+<div class="key-point">① 매일 990만원씩 현금 입금 → CTR 회피 목적 분할거래 → STR 보고</div>
+<div class="key-point">② CDD 과정에서 고객이 허위 정보·문서 제출 → STR 보고</div>
+<div class="key-point">③ 추가 CDD가 비밀 누설 우려 → 추가 CDD 대신 <strong>직접 STR 보고</strong> (Tipping-off 방지)</div>
+<div class="key-point">④ 뉴스에서 고객 횡령 혐의 보도 → 즉시 Trigger-based CDD + STR 검토</div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">Tipping-off 금지</div>
+<div class="danger-point">STR 보고 사실·예정을 고객/제3자에게 알리면 → <strong>5년 이하 징역 또는 5천만원 이하 벌금</strong></div>
+<div class="key-point"><strong>면책</strong>: 선의로 STR 보고 시(고의·중과실 아니면) 법적 책임 없음</div>
+<br>
+<div style="font-weight:700;color:var(--accent);margin-bottom:8px;">거래모니터링 & TD Bank 사례</div>
+<div class="key-point">TD Bank (2024.10): 미국 역대 최대 AML 과징금 <strong>30.9억달러(약 4조원)</strong>. 10년간 거래량 92% 모니터링 안 함</div>`},
+
+// ────── 과목2 최종 암기 ──────
+{id:'T33',cat:'과목2 · 최종암기',
+title:'최종 핵심 숫자 체크리스트 Part 1',
+body:`<table><tr><th>항목</th><th>숫자·기준</th><th>근거</th></tr>
+<tr><td>CTR 기준금액</td><td><strong>1천만원</strong> (외화 1만달러)</td><td>특금법 시행령 (2019.7~)</td></tr>
+<tr><td>STR 보고기한</td><td>보고책임자 결정 후 <strong>3영업일</strong></td><td>특금법</td></tr>
+<tr><td>CTR 보고기한</td><td>거래 발생일부터 <strong>30일</strong> (달력일)</td><td>특금법</td></tr>
+<tr><td>트래블룰 기준</td><td><strong>100만원</strong> 이상 가상자산 이전</td><td>특금법</td></tr>
+<tr><td>CDD 재이행 (고위험)</td><td><strong>1년</strong></td><td>금융회사 내규</td></tr>
+<tr><td>CDD 재이행 (중위험)</td><td><strong>2년</strong></td><td>금융회사 내규</td></tr>
+<tr><td>CDD 재이행 (저위험)</td><td><strong>3년</strong></td><td>금융회사 내규</td></tr>
+<tr><td>비대면 이중확인</td><td>5가지 방법 중 <strong>2가지 필수</strong></td><td>2024.2 유권해석</td></tr>
+<tr><td>실소유자 1순위 기준</td><td>지분 <strong>25%</strong> 이상</td><td>특금법</td></tr>
+<tr><td>콜드월렛 보관비율</td><td><strong>80%</strong> 이상</td><td>가상자산이용자보호법</td></tr></table>`},
+
+{id:'T34',cat:'과목2 · 최종암기',
+title:'최종 핵심 숫자 체크리스트 Part 2',
+body:`<table><tr><th>항목</th><th>숫자·기준</th><th>근거</th></tr>
+<tr><td>보고책임자 AML 경력</td><td><strong>2년</strong> 이상</td><td>2024.11 업무규정 개정</td></tr>
+<tr><td>VASP 거래기록 보관</td><td><strong>15년</strong></td><td>특금법</td></tr>
+<tr><td>CTR 거짓보고 벌칙</td><td>1년 이하/1천만원</td><td>특금법 제17조</td></tr>
+<tr><td>CTR 미보고 과태료</td><td>3천만원 이하</td><td>특금법 제20조</td></tr>
+<tr><td>STR 누설금지 위반</td><td>5년 이하/5천만원</td><td>특금법</td></tr>
+<tr><td>FATF 한국 5차 평가</td><td><strong>2028년 3월</strong></td><td>FATF</td></tr>
+<tr><td>두나무 과태료</td><td><strong>352억원</strong> (역대 최대)</td><td>2025.11</td></tr>
+<tr><td>TD Bank 과징금</td><td><strong>30.9억달러</strong></td><td>2024.10 미국</td></tr>
+<tr><td>FATF R.16 이행기한</td><td><strong>2030년</strong></td><td>2025.6 총회</td></tr>
+<tr><td>에그몽 가입</td><td><strong>2002.6</strong></td><td>KoFIU</td></tr></table>`},
+
+{id:'T35',cat:'과목2 · 최종암기',
+title:'O/X 핵심 함정 최종 정리',
+body:`<table><tr><th>항목</th><th>정답</th><th>설명</th></tr>
+<tr><td>CTR 누설금지</td><td style="color:var(--danger)">X</td><td>CTR엔 누설금지 조항 없음. STR만 해당</td></tr>
+<tr><td>공공단체 CTR 면제</td><td style="color:var(--danger)">X</td><td>2019.7.1부터 면제 제외됨</td></tr>
+<tr><td>상장법인 실소유자 면제</td><td style="color:var(--accent3)">O</td><td>면제 대상 맞음</td></tr>
+<tr><td>계좌이체 CTR 합산</td><td style="color:var(--danger)">X</td><td>현금 물리적 이동 아님</td></tr>
+<tr><td>자기앞수표 CTR 합산</td><td style="color:var(--danger)">X</td><td>수표는 현금이 아님</td></tr>
+<tr><td>VASP CTR 면제</td><td style="color:var(--danger)">X</td><td>고위험 업종으로 면제 제외</td></tr>
+<tr><td>TF에 합법자금 포함</td><td style="color:var(--accent3)">O</td><td>합법 자금도 테러 목적 시 대상</td></tr>
+<tr><td>SDD 시 신원확인 생략</td><td style="color:var(--danger)">X</td><td>간소화해도 최소 신원확인 필수</td></tr>
+<tr><td>비호스팅지갑 트래블룰 면제</td><td style="color:var(--danger)">X</td><td>추가 위험관리 필요, 면제 아님</td></tr>
+<tr><td>STR 면책 (선의보고)</td><td style="color:var(--accent3)">O</td><td>고의·중과실 아니면 법적 책임 없음</td></tr>
+<tr><td>FIU 수사권 있음</td><td style="color:var(--danger)">X</td><td>FIU는 수사권·기소권 없음</td></tr>
+<tr><td>다른 은행 현금 합산 CTR</td><td style="color:var(--danger)">X</td><td>CTR은 동일 금융회사 기준</td></tr></table>`},
+];
+
+// ════════════════════════════════════════════════════════
+// QUIZ DATA — 전체 교재 내용 반영 (80+ 문제)
+// ════════════════════════════════════════════════════════
+const QUIZ_DATA = [
+// 과목1 Day1
+{cat:'과목1·자금세탁 개요',q:'자금세탁 3단계의 올바른 순서는?',opts:['배치→통합→반복','반복→배치→통합','배치→반복→통합','통합→반복→배치','반복→통합→배치'],ans:2,ex:'P-L-I: 배치(Placement)→반복(Layering)→통합(Integration). 배치는 금융시스템 진입, 반복은 출처 은폐, 통합은 합법화입니다.'},
+{cat:'과목1·자금세탁 개요',q:'자금세탁의 3단계 중 적발하기 가장 어려운 단계는?',opts:['배치(Placement)','반복(Layering)','통합(Integration)','감지(Detection)','은폐(Concealment)'],ans:2,ex:'통합(Integration) 단계는 세탁된 자금이 이미 합법적 경제활동에 투입된 상태라 추적이 매우 어렵습니다.'},
+{cat:'과목1·자금세탁 개요',q:'스머핑(Smurfing)은 자금세탁의 몇 단계에 해당하는가?',opts:['1단계 배치(Placement)','2단계 반복(Layering)','3단계 통합(Integration)','모든 단계','해당 없음'],ans:0,ex:'스머핑은 CTR 보고기준을 회피하기 위해 소액으로 분산 입금하는 행위로, 금융시스템에 자금을 최초 투입하는 배치(1단계) 단계입니다.'},
+{cat:'과목1·자금세탁 개요',q:'테러자금조달(TF)과 자금세탁(ML)의 차이로 올바른 것은?',opts:['TF는 불법자금만 대상이다','ML은 미래 범죄를 위한 자금 확보가 목적이다','TF는 합법적 자금도 대상이 될 수 있다','TF 금액은 항상 거액이다','ML과 TF의 자금 출처는 동일하다'],ans:2,ex:'TF는 기부금이나 합법 사업수익도 테러 목적에 사용되면 규제 대상입니다. ML은 불법 범죄수익을 합법화하는 것이 목적이고, TF는 미래 범죄(테러)를 위한 자금 확보가 목적입니다.'},
+// 과목1 Day2 조약
+{cat:'과목1·국제조약',q:'마약 관련 자금세탁을 최초로 범죄화한 국제협약은?',opts:['팔레모 협약','UN 테러자금억제협약','비엔나 협약(1988)','볼프스버그 준칙','메리다 협약'],ans:2,ex:'1988년 비엔나 협약이 마약 향정신성 물질 불법거래 방지를 위해 마약 관련 ML만을 최초로 범죄화하였습니다.'},
+{cat:'과목1·국제조약',q:'국제 중대범죄·조직범죄 처벌과 국가 협력의무를 규정한 협약은?',opts:['비엔나 협약','바젤위원회 선언','메리다 협약','팔레모 협약(2000)','볼프스버그 준칙'],ans:3,ex:'2000년 팔레모 협약(UN 국제조직범죄방지협약)이 국제 중대범죄·조직범죄 처벌 및 국가 협력의무를 규정합니다.'},
+// 과목1 Day3-5 FATF
+{cat:'과목1·FATF 조직',q:'FATF에서 고위험·비협조 국가를 식별하고 그레이리스트/블랙리스트를 관리하는 기구는?',opts:['운영위원회(Steering Group)','ECG','PDG','ICRG','GNCG'],ans:3,ex:'ICRG(International Co-operation Review Group)가 고위험·비협조 국가를 가려내는 역할을 합니다. 운영위원회는 총회 준비·운영 지원입니다.'},
+{cat:'과목1·FATF 조직',q:'FATF 총회는 연 몇 회 개최되는가?',opts:['1회','2회','3회','4회','6회'],ans:2,ex:'FATF 총회(Plenary)는 연 3회(2월, 6월, 10월) 개최됩니다.'},
+{cat:'과목1·FATF 조직',q:'FATF 40개 권고사항 중 CDD(고객확인의무)에 해당하는 번호는?',opts:['R.1','R.5','R.10','R.16','R.20'],ans:2,ex:'R.10이 고객확인의무(CDD)입니다. R.1=위험평가·RBA, R.5=TF범죄, R.16=전신송금, R.20=STR, R.29=FIU'},
+{cat:'과목1·FATF 조직',q:'FATF 40개 권고사항 중 D분류(예방조치)에 해당하지 않는 것은?',opts:['R.10 CDD','R.12 PEP','R.16 전신송금','R.20 STR','R.24 법인 투명성'],ans:4,ex:'R.24(법인 투명성·실소유자)는 E분류(법인·신탁 투명성)에 해당합니다. 예방조치(D)는 R.9~R.23입니다.'},
+{cat:'과목1·FATF 조직',q:'FATF는 1989년 설립 이후 WMD 확산금융으로 관할 영역을 확대한 연도는?',opts:['1996년','2001년','2008년','2012년','2015년'],ans:3,ex:'FATF 영역 확대: 마약(1989) → 중대범죄 ML(1996) → 테러자금조달(2001) → WMD 확산금융(2012)'},
+// 과목1 Day7-9 평가
+{cat:'과목1·FATF 평가',q:'FATF 상호평가의 기술적 평가(TC) 등급이 아닌 것은?',opts:['C(이행)','LC(대부분)','PC(부분)','NC(미이행)','ME(보통)'],ans:4,ex:'ME(Moderately Effective)는 효과성 평가(IO) 등급입니다. TC는 C/LC/PC/NC 4단계, IO는 HE/SE/ME/LE 4단계입니다.'},
+{cat:'과목1·FATF 평가',q:'FATF 5차 상호평가 라운드(2025~)의 핵심 특징으로 올바른 것은?',opts:['마약 중심 평가','STR 의무화','FIU 설치 의무화','RBA 전면 도입','성과 중심 평가 + 3년내 핵심 이행 로드맵'],ans:4,ex:'5차 라운드: 성과 중심 평가 강화, 시한부 핵심 권고조치 로드맵(3년 내 이행), 사이버 사기·가상자산 리스크 대응 강조'},
+{cat:'과목1·FATF 평가',q:'한국의 FATF 상호평가 결과에 대한 설명으로 올바른 것은?',opts:['2019년 4차 평가에서 즉시 정규 후속점검','2024.10 ICRG 후속점검으로 상향','2024.10 정규 후속점검으로 상향','그레이리스트에 포함된 적 있음','5차 평가는 2030년 예정'],ans:2,ex:'한국은 2019년 4차 평가에서 강화된 후속점검 대상이었다가, 2024년 10월 총회에서 정규 후속점검으로 상향 조정되었습니다. 5차 평가는 2028년 3월 예정입니다.'},
+{cat:'과목1·FATF 평가',q:'정규 후속점검 기준(TC 기준)으로 올바른 것은?',opts:['PC/NC 5개 미만','PC/NC 8개 미만이고 핵심권고 5개 모두 C/LC','PC/NC 10개 미만','PC/NC 20개 미만','조건 없이 자동 배정'],ans:1,ex:'정규 후속점검: TC 기준으로 PC/NC 8개 미만이고 핵심권고 5개 모두 C/LC, IO 기준으로 HE/SE 5개 이상이어야 합니다.'},
+// 과목1 Day10 최신
+{cat:'과목1·2026년 최신',q:'2026년 2월 FATF 총회에서 그레이리스트에 신규 추가된 국가는?',opts:['알제리·나미비아','이란·미얀마','쿠웨이트·파푸아뉴기니','볼리비아·베트남','북한·시리아'],ans:2,ex:'2026.2 총회에서 쿠웨이트와 파푸아뉴기니가 그레이리스트에 신규 추가. 알제리·나미비아는 현장실사(on-site) 단계 진입.'},
+{cat:'과목1·2026년 최신',q:'2026년 2월 FATF 총회 차기 의장의 출신국은?',opts:['멕시코','싱가포르','영국','독일','프랑스'],ans:2,ex:'영국의 Giles Thomson이 2026.7~2028.6 임기의 차기 의장으로 선출되었습니다. 2025.7부터 부의장으로 재임 중이었습니다.'},
+{cat:'과목1·2026년 최신',q:'2026년 2월 FATF 총회에서 채택된 신규 보고서 주제가 아닌 것은?',opts:['사이버 기반 사기(Cyber-enabled fraud)','역외 VASP 규제 격차','스테이블코인·언호스티드 월렛 위험','블록체인 기반 CBDC 발행 규제','5차 라운드 상호평가 보고서'],ans:3,ex:'CBDC 발행 규제는 2026년 2월 총회 의제가 아닙니다. 사이버사기, 역외 VASP, 스테이블코인·언호스티드 월렛 위험 분석, 5차 라운드 보고서(오스트리아·이탈리아·싱가포르)가 채택되었습니다.'},
+// 과목1 EU AMLD
+{cat:'과목1·EU AMLD',q:'EU AMLD에서 가상자산(암호화폐) 규제가 처음 강화된 차수는?',opts:['2차','3차','4차','5차','6차'],ans:3,ex:'5차 AMLD(2018년)에서 가상자산 규제가 강화되고 실소유자 등기소 공개 접근이 도입되었습니다. 4차는 조세범죄·국내외 PEP, 6차는 CTR 10,000유로가 핵심입니다.'},
+{cat:'과목1·EU AMLD',q:'EU AMLA(자금세탁방지감독기관)의 소재지는?',opts:['브뤼셀','파리','독일 프랑크푸르트','암스테르담','룩셈부르크'],ans:2,ex:'AMLA는 2024년 발족하였으며 독일 프랑크푸르트에 위치합니다. 2028.1부터 40곳을 직접 감독합니다.'},
+{cat:'과목1·EU AMLD',q:'한국이 속한 FATF 스타일 지역기구(FSRBs)는?',opts:['MONEYVAL','ESAAMLG','APG','GIABA','CFATF'],ans:2,ex:'한국은 APG(Asia Pacific Group on Money Laundering)에 소속되어 있습니다. 에그몽 그룹에는 2002년 6월 가입했습니다.'},
+// 과목1 주요국 감독기관
+{cat:'과목1·주요국 감독기관',q:'미국에서 경제·무역 제재와 SDN 리스트를 운영하는 기관은?',opts:['FinCEN','OFAC','OCC','SEC','FCA'],ans:1,ex:'OFAC(Office of Foreign Assets Control)는 재무부 소속으로 경제·무역 제재와 SDN(Specially Designated Nationals) 리스트를 운영합니다. FinCEN은 미국 FIU로 BSA 보고를 수집·분석합니다.'},
+{cat:'과목1·주요국 감독기관',q:'영국의 FIU 기능을 담당하는 기관은?',opts:['FCA','SFO','NCA','PRA','BoE'],ans:2,ex:'NCA(National Crime Agency)가 영국 FIU 기능을 담당합니다. FCA(Financial Conduct Authority)는 AML/CFT 감독을 주관하는 금융행위감독청입니다.'},
+// 과목1 국내 법률
+{cat:'과목1·국내 법률체계',q:'우리나라 금융실명제가 전격 시행된 연도는?',opts:['1987년','1990년','1993년','1997년','2001년'],ans:2,ex:'1993년 8월 12일 김영삼 정부의 대통령 긴급명령으로 금융실명제가 전격 시행되었습니다.'},
+{cat:'과목1·국내 법률체계',q:'범죄수익은닉규제법의 전제범죄 규정 방식은?',opts:['포괄주의','열거주의','위임주의','판례주의','행정입법'],ans:1,ex:'범죄수익은닉규제법은 열거주의 방식으로 자금세탁의 전제가 되는 범죄 유형을 구체적으로 열거합니다.'},
+{cat:'과목1·국내 법률체계',q:'테러자금금지법의 50% 룰에 대한 올바른 설명은?',opts:['30% 이상 소유시 적용','금융거래제한대상자가 50% 이상 소유·지배하는 법인도 제한 대상','개인에게만 적용','이사회 의결시 예외','국내 법인에만 적용'],ans:1,ex:'50% 룰: 금융거래제한대상자가 단독·공동으로 50% 이상 소유·지배하는 법인·단체도 금융거래 제한 대상이 됩니다.'},
+// 과목1 STR 변천
+{cat:'과목1·특정금융정보법',q:'STR 기준금액이 2천만원이었던 시기는?',opts:['2001~2004','2004~2008','2008~2013','2013년 이후','2001년 이전'],ans:1,ex:'STR 기준금액: 5천만원(2001) → 2천만원(2004) → 1천만원(2008) → 폐지(2013). 2005년 3천만원 아님!'},
+{cat:'과목1·특정금융정보법',q:'CTR 보고기한 계산 — 거래일 4월 4일(목)인 경우 보고기한은?',opts:['4월 30일','5월 4일','5월 5일','5월 6일','5월 7일'],ans:4,ex:'거래일 4월 4일 + 30일 = 5월 4일(토) → 휴일 → 5월 5일(일) → 휴일 → 5월 6일(대체휴일) → 5월 7일(화)이 보고기한. 기한일이 휴일이면 다음 영업일로 연장!'},
+// 과목1 과태료
+{cat:'과목1·과태료·벌칙',q:'특정금융정보법상 과태료가 가장 높은 위반행위는?',opts:['STR 미보고','CTR 미보고','CDD 미수행','EDD 미수행','검사 거부·방해·기피'],ans:4,ex:'검사 거부·방해·기피는 과태료 1억원(법정 최고액)입니다. CTR=900만원, STR·CDD·자료보존=1,800만원, EDD·내부통제·VASP=6,000만원.'},
+{cat:'과목1·과태료·벌칙',q:'CTR 미보고의 과태료 금액은?',opts:['300만원','500만원','900만원','1,800만원','3,000만원'],ans:2,ex:'CTR 미보고 과태료: 900만원 (법정 상한 3,000만원). 암기: CTR=900, STR·CDD=1,800, 내부통제·EDD·VASP=6,000, 검사거부=1억'},
+{cat:'과목1·과태료·벌칙',q:'과태료 가중 범위로 올바른 것은?',opts:['4분의 1','3분의 1','2분의 1','3분의 2','전액'],ans:2,ex:'FIU원장은 2분의 1 범위에서 과태료를 가중할 수 있습니다. 4분의 1이 아님! 법정 상한을 초과할 수 없습니다.'},
+{cat:'과목1·과태료·벌칙',q:'STR/CTR 거짓 보고에 대한 벌칙은?',opts:['3년/3천만원','5년/5천만원','1년/1천만원','2년/2천만원','과태료만 부과'],ans:2,ex:'STR/CTR 거짓 보고는 1년 이하 징역 또는 1천만원 이하 벌금. STR 누설(Tipping-off) 위반은 5년 이하 징역/5천만원 이하 벌금(별도).'},
+{cat:'과목1·과태료·벌칙',q:'EDD 미수행의 과태료 금액은?',opts:['900만원','1,800만원','3,000만원','6,000만원','1억원'],ans:3,ex:'EDD 미수행 = 6,000만원 (법정 상한 1억원). 내부통제 미비·VASP 조치 미이행도 동일 6,000만원.'},
+// 과목1 FIU
+{cat:'과목1·FIU',q:'FIU(금융정보분석원)의 소속 기관은?',opts:['기획재정부','법무부','금융위원회','행정안전부','국세청'],ans:2,ex:'FIU는 금융위원회 소속입니다. 2001.11 설립, 독립적 사무 수행, 수사권·기소권 없음.'},
+{cat:'과목1·FIU',q:'FIU의 해외협력 업무를 담당하는 부서는?',opts:['제도운영과','심사분석실','가상자산검사과','기획행정실','보고분석과'],ans:3,ex:'해외협력은 기획행정실 업무입니다. 제도운영과가 아님! 기획행정실은 기획·행정, 법령·규정, 국제협력, 전산정보를 담당합니다.'},
+{cat:'과목1·FIU',q:'FIU 검사수탁기관 중 환전업자를 담당하는 기관은?',opts:['금융감독원','관세청','행정안전부','중소벤처기업부','제주도청'],ans:1,ex:'환전업자는 관세청이 담당. 금감원(은행/증권/보험/VASP), 행안부(새마을금고중앙회), 제주도청(제주 소재 카지노).'},
+// 과목1 TBML VASP
+{cat:'과목1·TBML·VASP',q:'TBML 4대 유형이 아닌 것은?',opts:['과대송장(Over-invoicing)','과소송장(Under-invoicing)','다중송장(Multiple-invoicing)','허위기재(Falsely Described)','정상송장(Normal-invoicing)'],ans:4,ex:'정상송장은 TBML 유형이 아닙니다. 4대 유형: 과대송장, 과소송장, 다중송장, 허위기재(유령거래 포함).'},
+{cat:'과목1·TBML·VASP',q:'가상자산이용자보호법(2024.7 시행)에 따른 콜드월렛 최소 보관 비율은?',opts:['50%','60%','70%','80%','90%'],ans:3,ex:'가상자산이용자보호법에 따라 VASP는 고객 자산의 80% 이상을 콜드월렛에 보관해야 합니다.'},
+{cat:'과목1·TBML·VASP',q:'국내 가상자산 트래블룰 적용 기준금액은?',opts:['10만원','50만원','100만원','200만원','500만원'],ans:2,ex:'트래블룰은 100만원 이상의 가상자산 이전 시 송신인과 수신인 정보를 함께 전달해야 합니다.'},
+{cat:'과목1·TBML·VASP',q:'FATF R.16 2025.6 개정의 핵심 내용은?',opts:['STR 보고기한 단축','전신송금→결제/가치이전 용어 확대·가상자산 포함·2030년 이행기한','CDD 기준금액 하향','트래블룰 폐지','2028년 이행기한'],ans:1,ex:'FATF R.16이 2025.6 총회 전면개정으로 전신송금이 결제/가치이전으로 확대되었고 가상자산이 포함됩니다. 이행기한은 2030년입니다.'},
+// 과목2 CTR
+{cat:'과목2·CTR',q:'동일인이 B은행 지점 3곳에서 각각 600만원, 500만원, 400만원을 현금 입금한 경우 CTR 처리는?',opts:['각 지점 1천만원 미만이므로 불요','B은행 합산 1,500만원으로 CTR 보고','합산 2천만원 미만 불요','각 지점은 독립 법인','외화거래가 아니므로 불요'],ans:1,ex:'CTR은 동일 금융회사 내 동일인의 1거래일 합산 기준. B은행 지점은 모두 동일 금융회사이므로 600+500+400=1,500만원으로 합산 CTR 보고.'},
+{cat:'과목2·CTR',q:'CTR 합산 대상이 아닌 거래는?',opts:['창구 현금 500만원 입금','ATM 현금 300만원 입금','인터넷뱅킹 700만원 계좌이체','강남지점 현금 400만원 입금','타점 ATM 현금 200만원 출금'],ans:2,ex:'계좌이체는 현금의 물리적 이동이 없으므로 CTR 합산 대상이 아닙니다. CTR은 금융회사와 고객 사이의 현금 물리적 이동만 대상입니다.'},
+{cat:'과목2·CTR',q:'자기앞수표의 CTR 처리로 올바른 것은?',opts:['현금으로 간주하여 합산 포함','수표이므로 합산 제외','1천만원 이상이면 포함','발행 은행 기준 별도 계산','외화수표와 동일 처리'],ans:1,ex:'자기앞수표는 법률상 수표이지 현금이 아닙니다. CTR은 현금 물리적 이동만 대상이므로 자기앞수표는 합산 제외입니다.'},
+{cat:'과목2·CTR',q:'CTR 보고 면제 대상이 아닌 것은?',opts:['국가·지방자치단체','금융감독원과의 거래','다른 금융회사와의 거래','공공단체','한국은행과의 거래'],ans:3,ex:'공공단체는 2019.7.1부터 CTR 면제에서 제외되었습니다. 지방공기업법에 따른 지방직영기업·지방공사·지방공단은 공공단체에 해당합니다.'},
+{cat:'과목2·CTR',q:'대위변제자가 타인의 대출 5억원을 현금 상환한 경우 CTR 보고 대상(거래자)은?',opts:['대출 차주','대위변제자','대출 차주와 대위변제자 모두','CTR 대상 아님','금융회사 판단'],ans:1,ex:'대위변제의 경우 CTR 보고 대상은 실제로 현금을 지급한 대위변제자입니다. 대출 차주가 아닌 실제 현금 거래 당사자 기준입니다.'},
+{cat:'과목2·CTR',q:'CTR 보고기한으로 올바른 것은?',opts:['보고책임자 결정 후 3영업일','거래발생일부터 7일','거래발생일부터 30일(달력일)','거래발생일부터 60일','익영업일까지'],ans:2,ex:'CTR 보고기한은 거래 발생일로부터 30일(달력일 기준) 이내. STR은 보고책임자 결정 후 3영업일 이내.'},
+{cat:'과목2·CTR',q:'CTR의 올바른 설명을 모두 고른 것은? 가.CTR은 중계기관을 통해 보고 나.CTR 보고기한은 거래 발생일부터 30일 다.100만원 이하 원화 송금은 합산 제외 라.자기앞수표는 현금으로 합산 포함',opts:['가, 나','나, 다','가, 다, 라','나, 다, 라','가, 나, 다, 라'],ans:1,ex:'"나"(30일 맞음) "다"(100만원 이하 무통장입금 합산 제외 맞음)만 올바릅니다. "가"는 중계기관 통해 보고가 맞지만 CTR은 금융회사가 직접 보고하므로 오답. "라" 자기앞수표는 수표이므로 합산 제외.'},
+{cat:'과목2·CTR',q:'외화예금에서 외화를 직접 인출하는 경우 CTR 대상인가?',opts:['대상이다 - 현금이기 때문','대상이 아니다 - 외화는 CTR 대상 아님','1만달러 초과 시 대상','금액 무관하게 대상','은행 판단에 따름'],ans:1,ex:'CTR은 원화 현금만 대상입니다. 외화예금에서 외화로 인출하는 경우 CTR 대상이 아닙니다. 단, 외화를 원화로 환전 후 인출하면 원화 현금이므로 대상입니다.'},
+// 과목2 STR
+{cat:'과목2·STR',q:'STR과 CTR의 비교 중 틀린 것은?',opts:['STR 기준금액 없음(2013 폐지)','CTR 객관적 기준으로 직원 판단 불필요','STR 보고책임자 결정 후 3영업일','CTR 보고 사실을 고객에게 알리면 형사처벌','STR은 현금 외 이체 등 모든 거래 대상'],ans:3,ex:'CTR에는 누설금지 조항이 없습니다. 누설금지 의무는 STR에만 있으며 위반 시 5년 이하 징역/5천만원 이하 벌금입니다.'},
+{cat:'과목2·STR',q:'STR 보고책임자 결정 후 KoFIU에 보고해야 하는 기한은?',opts:['당일','익영업일','3영업일 이내','7영업일 이내','30일 이내'],ans:2,ex:'STR은 보고책임자가 의심거래로 결정한 때로부터 3영업일 이내에 보고. 30일 이내는 CTR의 보고기한입니다.'},
+{cat:'과목2·STR',q:'직원 A씨가 선의로 STR을 보고했으나 사후 정상 거래로 밝혀진 경우 A씨는?',opts:['허위보고로 형사처벌','선의의 보고이므로 면책','금융회사가 손해배상 해야','A씨는 징계 대상','KoFIU가 과태료 부과'],ans:1,ex:'특정금융정보법상 선의로 STR을 보고한 경우 면책됩니다. 고의·중과실이 아닌 한 법적 책임을 지지 않습니다. STR 보고를 활성화하기 위한 핵심 장치입니다.'},
+{cat:'과목2·STR',q:'Tipping-off 방지를 위해 추가 CDD가 STR 사실 누설 우려가 있다고 판단된 경우 올바른 대응은?',opts:['추가 CDD 그대로 수행','고객에게 STR 예정임 고지 후 CDD 수행','추가 CDD 없이 직접 STR 보고','아무 조치 없음','수사기관에 직접 신고'],ans:2,ex:'Tipping-off 방지를 위해 추가 CDD가 비밀 누설 우려가 있다고 합리적으로 판단되는 경우, 추가 CDD를 수행하지 않고 직접 STR을 보고해야 합니다(특금법 명시).'},
+{cat:'과목2·STR',q:'STR 누설금지(Tipping-off) 위반 시 벌칙은?',opts:['1년/1천만원','3년/3천만원','5년/5천만원','7년/7천만원','과태료 1억원'],ans:2,ex:'STR 보고 사실·예정을 고객 또는 제3자에게 알리면 5년 이하 징역 또는 5천만원 이하 벌금에 처합니다.'},
+{cat:'과목2·STR',q:'STR 보고 관련 설명 중 틀린 것은?',opts:['STR 보고책임자는 AML 분야 2년 이상 경력 필요','STR 보고 사실 누설 시 5년 이하 징역','STR은 현금 외 모든 금융거래가 대상','STR 고객 CTR 회피 분할거래 시 보고 필요','STR 보고기한은 거래 발생일부터 30일'],ans:4,ex:'30일 이내는 CTR의 보고기한입니다. STR 보고기한은 보고책임자가 의심거래로 결정한 때로부터 3영업일 이내입니다. 자주 혼동하는 대표 함정!'},
+// 과목2 CDD
+{cat:'과목2·CDD',q:'CDD를 이행해야 하는 시기 중 기준금액이 있는 것은?',opts:['계좌 신규 개설','일회성 금융거래','자금세탁 우려','기존 CDD 불일치 우려','모두 기준금액 없음'],ans:1,ex:'일회성 금융거래 CDD 기준금액: 원화 1천만원, 외화 1만달러 이상. 나머지(계좌개설, 자금세탁 우려, CDD 불일치 우려)는 금액 무관입니다.'},
+{cat:'과목2·CDD',q:'계좌 미보유 고객이 800만원 무통장입금 시 CDD 이행 여부는?',opts:['CDD 필수 이행','CDD 불요(기준금액 미달)','자금세탁 우려 없으면 불요','금액 무관 이행 필수','500만원 초과이므로 이행'],ans:1,ex:'일회성 금융거래 CDD 기준금액은 원화 1천만원입니다. 800만원은 기준금액 미달이므로 CDD 불요. 단, 자금세탁 우려가 있으면 이행 가능합니다.'},
+{cat:'과목2·CDD',q:'법인 실소유자(BO) 확인 1순위 기준은?',opts:['10% 이상 지분','20% 이상 지분','25% 이상 지분','33% 이상 지분','50% 이상 지분'],ans:2,ex:'실소유자 확인 1순위: 25% 이상 지분(의결권) 보유 자연인. 2순위: 실질 지배자, 3순위: 대표이사.'},
+{cat:'과목2·CDD',q:'실소유자 확인 의무가 면제되지 않는 대상은?',opts:['국가·지방자치단체','금융위 감독 금융회사','코스피 상장법인','비상장 중소기업','코스닥 상장법인'],ans:3,ex:'비상장 중소기업은 실소유자 확인 면제 대상이 아닙니다. 면제: 국가·지자체, 금융위 감독 금융회사, 상장법인(코스피·코스닥 포함).'},
+{cat:'과목2·CDD',q:'비대면 CDD 이중확인 5가지 방법에 해당하지 않는 것은?',opts:['신분증 사본 제출','영상통화','접근매체 전달 시 확인','공동인증서(공인인증서)','기존계좌 활용'],ans:3,ex:'공동인증서는 비대면 CDD 이중확인 5가지(①신분증 사본 ②영상통화 ③접근매체 전달 ④기존계좌 ⑤기타 준하는 방법)에 해당하지 않습니다.'},
+{cat:'과목2·CDD',q:'고위험 고객의 CDD 재이행 주기는?',opts:['6개월','1년','2년','3년','5년'],ans:1,ex:'CDD 재이행 주기: 고위험 1년 / 중위험 2년 / 저위험 3년입니다.'},
+{cat:'과목2·CDD',q:'CDD 재이행을 고객이 영업점에 방문한 경우에만 수행하는 것은 적절한가?',opts:['적절하다 - 대면확인 원칙','적절하지 않다 - 방문 여부와 무관하게 정기적 수행 필요','적절하다 - 비대면은 어려움','적절하다 - 효율적이기 때문','규정에 명시 없어 재량사항'],ans:1,ex:'CDD 재이행은 고객 방문 여부와 무관하게 정기적으로 수행해야 합니다. 내점 시에만 수행하는 것은 실효성 없으며 금감원 검사 지적 대상입니다.'},
+{cat:'과목2·CDD',q:'고객이 CDD에 필요한 정보 제공을 거부한 경우 올바른 대응은?',opts:['일부 정보로 거래 진행 가능','신규거래 거절, 기존거래 종료 의무','금액에 따라 선택 가능','상위자 승인으로 예외 가능','임시 거래 허용 후 정보 수집'],ans:1,ex:'특금법 제5조의2 제4항: 고객이 CDD 정보 제공을 거부하면 신규거래는 거절, 기존거래는 종료해야 합니다. 금융회사 재량이 아닌 법적 의무입니다.'},
+// 과목2 RA
+{cat:'과목2·위험평가(RA)',q:'위험기반접근법(RBA) 관련 2025.2 FATF R.1 개정의 핵심 변경 내용은?',opts:['간소화 조치 완전 폐지','commensurate→proportionate 변경·저위험 간소화 의무화','RBA 원칙 삭제','EDD 적용 범위만 축소','고위험 기준 강화만'],ans:1,ex:'2025.2 R.1 개정: commensurate를 proportionate로 변경하여 RBA 양방향 적용 강화. 저위험 확인 시 간소화 조치를 의무적으로 적용할 수 있도록 명확히 하였습니다. 간소화 조치 폐지가 아님!'},
+{cat:'과목2·위험평가(RA)',q:'잔여위험(Residual Risk)의 정의로 올바른 것은?',opts:['고유위험과 통제위험의 합','내부통제 전의 본질적 위험','내부통제 장치의 효과성','내부통제 후에도 남아있는 위험','고유위험을 통제위험으로 나눈 값'],ans:3,ex:'잔여위험 = 고유위험 × (1-통제효과). 내부통제 적용 후에도 남아있는 위험으로, 고유위험이 높더라도 통제가 효과적이면 잔여위험은 낮아집니다.'},
+{cat:'과목2·위험평가(RA)',q:'EDD(강화된 고객확인) 대상이 아닌 것은?',opts:['PEP(정치적 주요인물) 및 가족','FATF 고위험·비협조 국가 고객','비거주 외국인','상장법인','VASP'],ans:3,ex:'상장법인은 실소유자 확인 면제 대상이지, EDD 적용 대상이 아닙니다. EDD 대상: PEP, FATF 고위험국, 비거주 외국인, 비대면, VASP, 복잡한 소유구조 법인 등 8가지.'},
+// 과목2 최신이슈
+{cat:'과목2·최신이슈',q:'2025.11 두나무(업비트)에 부과된 역대 최대 과태료는?',opts:['52억원','100억원','200억원','352억원','500억원'],ans:3,ex:'2025.11 KoFIU가 두나무(업비트)에 과태료 352억원(역대 최대) 부과. 위반 860만건: CDD 530만건+거래제한 330만건+STR 미보고 15건.'},
+{cat:'과목2·최신이슈',q:'TD Bank(2024.10) AML 과징금 사건의 핵심 위반 내용은?',opts:['STR 미보고만','CDD 미이행만','10년간 전체 거래량의 92%를 모니터링하지 않음','VASP 관련 위반','트래블룰 미이행'],ans:2,ex:'TD Bank는 2024.10 미국 역대 최대 AML 과징금 30.9억달러(약 4조원)를 부과받았습니다. 10년간 전체 거래량의 92%를 모니터링하지 않은 거래모니터링 시스템 부실이 핵심 원인입니다.'},
+{cat:'과목2·최신이슈',q:'2024.11 KoFIU 업무규정 개정으로 신설된 보고책임자 요건은?',opts:['금융 경력 5년 이상','법학 학위 필수','AML 분야 경력 2년 이상','금감원 자격증 필수','임원급 이상'],ans:2,ex:'2024.11 업무규정 개정으로 보고책임자는 AML 분야 2년 이상 경력이 필요합니다. 은행의 경우 보고책임자 최소직위는 이사/업무집행책임자입니다.'},
+{cat:'과목2·최신이슈',q:'VASP가 CTR 보고 면제 대상에서 제외되는 이유는?',opts:['VASP는 외화거래만 취급','VASP는 고위험 업종으로 면제 제외','VASP는 금융회사가 아님','VASP 거래는 전자거래','법적 근거 없음'],ans:1,ex:'VASP는 자금세탁 위험이 높은 고위험 업종으로 분류되어 CTR 보고 면제 대상에서 제외됩니다. 카지노사업자도 동일합니다.'},
+];
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let state={
+  studied:JSON.parse(localStorage.getItem('tpac2_studied')||'[]'),
+  wrong:JSON.parse(localStorage.getItem('tpac2_wrong')||'[]'),
+  stats:JSON.parse(localStorage.getItem('tpac2_stats')||'{"c":0,"t":0}'),
+  tFilter:'all', qFilter:'all',
+  tIdx:0, qNum:0, streak:0,
+  tTimer:null, qTimer:null,
+  tVal:60, qVal:30,
+};
+function save(){
+  localStorage.setItem('tpac2_studied',JSON.stringify(state.studied));
+  localStorage.setItem('tpac2_wrong',JSON.stringify(state.wrong));
+  localStorage.setItem('tpac2_stats',JSON.stringify(state.stats));
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function showScreen(id){
+  clearTimers();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const m={'home':'nav-home','theory':'nav-theory','quiz':'nav-quiz','wrong-screen':'nav-wrong'};
+  if(m[id])document.getElementById(m[id]).classList.add('active');
+  if(id==='home')updateHome();
+  if(id==='wrong-screen')renderWrong();
+}
+function startMode(mode){
+  if(mode==='theory'){showScreen('theory');state.tIdx=0;renderTheory();}
+  if(mode==='quiz'){showScreen('quiz');state.qNum=0;buildCatTabs('quiz');nextQ();}
+}
+
+// ════════════════════════════════════════════
+// HOME
+// ════════════════════════════════════════════
+function updateHome(){
+  const tot=THEORY_CARDS.length,st=state.studied.length;
+  document.getElementById('stat-studied').textContent=st+'/'+tot;
+  const acc=state.stats.t>0?Math.round(state.stats.c/state.stats.t*100):0;
+  document.getElementById('stat-acc').textContent=acc+'%';
+  document.getElementById('stat-total').textContent=state.stats.t;
+  document.getElementById('stat-wrong').textContent=state.wrong.length;
+  document.getElementById('wrong-count-badge').textContent='오답 '+state.wrong.length+'개';
+  const grid=document.getElementById('progress-grid');
+  grid.innerHTML='';
+  [
+    {key:'과목1', label:'과목 1', sub:'자금세탁방지 제도 (글로벌+국내)', filter:'과목1'},
+    {key:'과목2', label:'과목 2', sub:'자금세탁방지 실무 (CTR·STR·CDD·RA)', filter:'과목2'},
+  ].forEach(({key,label,sub,filter})=>{
+    const cards=THEORY_CARDS.filter(c=>c.cat.startsWith(key));
+    const done=cards.filter(c=>state.studied.includes(c.id)).length;
+    const pct=cards.length>0?Math.round(done/cards.length*100):0;
+    const d=document.createElement('div');
+    d.className='prog-card'+(done===cards.length&&cards.length>0?' done':'');
+    d.style.cssText='grid-column:span 1;min-width:0;';
+    d.innerHTML=`
+      <div class="prog-card-label">${sub}</div>
+      <div class="prog-card-title" style="font-size:15px;font-weight:900;color:var(--text)">${label}</div>
+      <div class="prog-bar-wrap" style="height:6px;margin:10px 0 6px"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="prog-pct" style="font-size:22px">${pct}%</div>
+        <div style="font-size:12px;color:var(--text2)">${done} / ${cards.length} 카드</div>
+      </div>`;
+    d.onclick=()=>{state.tFilter='all';
+      // 해당 과목 첫 카드로 이동
+      const idx=THEORY_CARDS.findIndex(c=>c.cat.startsWith(key));
+      showScreen('theory');
+      state.tIdx=Math.max(0,idx);
+      renderTheory();
+    };
+    grid.appendChild(d);
+  });
+}
+
+// ════════════════════════════════════════════
+// THEORY
+// ════════════════════════════════════════════
+function getTCards(){return state.tFilter==='all'?THEORY_CARDS:THEORY_CARDS.filter(c=>c.cat===state.tFilter);}
+function buildCatTabs(mode){
+  const cats=mode==='theory'?['all',...new Set(THEORY_CARDS.map(c=>c.cat))]:['all',...new Set(QUIZ_DATA.map(q=>q.cat))];
+  const wrap=document.getElementById(mode==='theory'?'theory-cats':'quiz-cats');
+  const cur=mode==='theory'?state.tFilter:state.qFilter;
+  wrap.innerHTML=cats.map(c=>`<button class="cat-tab ${cur===c?'active':''}" onclick="${mode==='theory'?'setTCat':'setQCat'}('${c}')">${c==='all'?'전체':c}</button>`).join('');
+}
+function setTCat(c){state.tFilter=c;state.tIdx=0;buildCatTabs('theory');renderTheory();}
+function renderTheory(){
+  clearTimers();
+  const cards=getTCards();if(!cards.length)return;
+  const card=cards[state.tIdx];
+  const done=state.studied.includes(card.id);
+  const pct=(state.tIdx+1)/cards.length*100;
+  document.getElementById('theory-prog-fill').style.width=pct+'%';
+  document.getElementById('theory-card-counter').textContent=(state.tIdx+1)+' / '+cards.length;
+  document.getElementById('theory-card-wrap').innerHTML=`
+    <div class="theory-card">
+      <div class="theory-topic">${card.cat} ${done?'<span class="studied-badge">✓ 학습완료</span>':''}</div>
+      <div class="theory-title">${card.title}</div>
+      <div class="theory-body">${card.body}</div>
+    </div>`;
+  document.getElementById('btn-prev-theory').style.display=state.tIdx>0?'':'none';
+  document.getElementById('btn-next-theory').textContent=state.tIdx<cards.length-1?'다음 →':'✓ 완료';
+  if(!done){state.studied.push(card.id);save();updateHome();}
+  startTTimer();
+}
+function prevTheory(){if(state.tIdx>0){state.tIdx--;renderTheory();}}
+function nextTheory(){
+  const cards=getTCards();
+  if(state.tIdx<cards.length-1){state.tIdx++;renderTheory();}
+  else{showToast('🎉 이론 학습 완료!','success');showScreen('home');}
+}
+function startTTimer(){
+  state.tVal=60;updateTTimerUI();
+  state.tTimer=setInterval(()=>{
+    state.tVal--;updateTTimerUI();
+    if(state.tVal<=0){clearInterval(state.tTimer);nextTheory();}
+  },1000);
+}
+function updateTTimerUI(){
+  const v=state.tVal;
+  document.getElementById('theory-timer-num').textContent=v;
+  const r=20,circ=2*Math.PI*r,off=circ*(1-v/60);
+  const ring=document.getElementById('theory-timer-ring');
+  ring.style.strokeDashoffset=off;
+  const col=v>30?'var(--accent)':v>10?'var(--warn)':'var(--danger)';
+  ring.style.stroke=col;
+  document.querySelector('.timer-ring-wrap span').style.color=col;
+}
+
+// ════════════════════════════════════════════
+// QUIZ
+// ════════════════════════════════════════════
+function getQPool(){return state.qFilter==='all'?QUIZ_DATA:QUIZ_DATA.filter(q=>q.cat===state.qFilter);}
+function setQCat(c){state.qFilter=c;buildCatTabs('quiz');nextQ();}
+let curQ=null;
+function nextQ(){
+  clearTimers();
+  const pool=getQPool();
+  if(!pool.length){document.getElementById('q-card-wrap').innerHTML='<div style="padding:40px;text-align:center;color:var(--text2)">해당 카테고리에 문제가 없습니다.</div>';return;}
+  state.qNum++;
+  curQ=pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('quiz-count').textContent='#'+state.qNum;
+  document.getElementById('q-card-wrap').innerHTML=`
+    <div class="q-card">
+      <div class="q-category">${curQ.cat}</div>
+      <div class="q-text">${curQ.q}</div>
+      <div class="options">${curQ.opts.map((o,i)=>`
+        <button class="opt-btn" onclick="selectOpt(${i})" id="opt-${i}">
+          <span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}
+        </button>`).join('')}
+      </div>
+    </div>`;
+  startQTimer();
+}
+function selectOpt(idx){
+  clearTimers();
+  const correct=idx===curQ.ans;
+  curQ.opts.forEach((_,i)=>{
+    const b=document.getElementById('opt-'+i);
+    b.disabled=true;
+    if(i===curQ.ans)b.classList.add('correct');
+    else if(i===idx&&!correct)b.classList.add('wrong');
+  });
+  state.stats.t++;
+  if(correct){state.stats.c++;state.streak++;}
+  else{
+    state.streak=0;
+    if(!state.wrong.find(w=>w.q.q===curQ.q))
+      state.wrong.push({q:curQ,my:idx,at:new Date().toLocaleDateString()});
+  }
+  save();
+  document.getElementById('score-chip').textContent='✓ '+state.stats.c;
+  document.getElementById('streak-chip').textContent='🔥 '+state.streak;
+  const wrap=document.getElementById('q-card-wrap');
+  const p=document.createElement('div');
+  p.className='result-popup '+(correct?'result-correct':'result-wrong');
+  p.innerHTML=`<div class="result-header">${correct
+    ?'<span style="color:var(--accent3);font-size:18px">✅</span> 정답!'
+    :`<span style="color:var(--danger);font-size:18px">❌</span> 오답! 정답: <strong>${String.fromCharCode(65+curQ.ans)}. ${curQ.opts[curQ.ans]}</strong>`}
+  </div>
+  <div class="result-explain">${curQ.ex}</div>
+  <button class="btn-next" onclick="nextQ()">다음 문제 →</button>`;
+  wrap.appendChild(p);
+  showToast(correct?'🎯 정답!':'틀렸습니다',correct?'success':'error');
+}
+function startQTimer(){
+  state.qVal=30;updateQTimerUI();
+  state.qTimer=setInterval(()=>{
+    state.qVal--;updateQTimerUI();
+    if(state.qVal<=0){clearInterval(state.qTimer);showToast('⏰ 시간 초과!','error');selectOpt(-1);}
+  },1000);
+}
+function updateQTimerUI(){
+  const v=state.qVal;
+  document.getElementById('quiz-timer-num').textContent=v;
+  const r=22,circ=2*Math.PI*r,off=circ*(1-v/30);
+  const ring=document.getElementById('quiz-timer-ring');
+  ring.style.strokeDashoffset=off;
+  const col=v>15?'var(--accent)':v>7?'var(--warn)':'var(--danger)';
+  ring.style.stroke=col;
+  document.getElementById('quiz-timer-num').style.color=col;
+}
+
+// ════════════════════════════════════════════
+// WRONG
+// ════════════════════════════════════════════
+function renderWrong(){
+  const c=document.getElementById('wrong-list');
+  if(!state.wrong.length){
+    c.innerHTML='<div class="empty-wrong"><div class="big">🎉</div><div style="font-size:17px;font-weight:700;margin-bottom:8px">오답 없음!</div><div style="font-size:13px">퀴즈를 풀면 틀린 문제가 여기 저장됩니다.</div></div>';
+    return;
+  }
+  c.innerHTML=`<div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+    <span style="color:var(--text2);font-size:12px">총 ${state.wrong.length}개</span>
+    <button onclick="clearWrong()" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:4px 10px;font-size:11px;color:var(--danger);cursor:pointer">전체 삭제</button>
+  </div>
+  ${state.wrong.map((item,i)=>`
+    <div class="wrong-item">
+      <div class="wrong-item-num">#${i+1} · ${item.q.cat} · ${item.at}</div>
+      <div class="wrong-q">${item.q.q}</div>
+      <div class="wrong-my">✗ 내 답: ${item.my>=0?String.fromCharCode(65+item.my)+'. '+item.q.opts[item.my]:'시간 초과'}</div>
+      <div class="wrong-ans">✓ 정답: ${String.fromCharCode(65+item.q.ans)}. ${item.q.opts[item.q.ans]}</div>
+      <div class="wrong-explain">${item.q.ex}</div>
+      <button onclick="removeWrong(${i})" style="background:transparent;border:none;color:var(--text3);font-size:11px;cursor:pointer;margin-top:6px">삭제</button>
+    </div>`).join('')}`;
+}
+function removeWrong(i){state.wrong.splice(i,1);save();renderWrong();document.getElementById('wrong-count-badge').textContent='오답 '+state.wrong.length+'개';}
+function clearWrong(){state.wrong=[];save();renderWrong();document.getElementById('wrong-count-badge').textContent='오답 0개';}
+
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
+function clearTimers(){
+  if(state.tTimer){clearInterval(state.tTimer);state.tTimer=null;}
+  if(state.qTimer){clearInterval(state.qTimer);state.qTimer=null;}
+}
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type;
+  void t.offsetWidth;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+
+// ════════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════════
+function applyTheme(dark){
+  document.body.classList.toggle('dark', dark);
+  const btn=document.getElementById('theme-toggle-btn');
+  if(btn) btn.textContent = dark ? '☀️ 라이트' : '🌙 다크';
+  localStorage.setItem('tpac_theme', dark?'dark':'light');
+}
+function toggleTheme(){
+  applyTheme(!document.body.classList.contains('dark'));
+}
+// Load saved theme
+(function(){
+  const saved=localStorage.getItem('tpac_theme');
+  if(saved==='dark') applyTheme(true);
+})();
+
+// INIT
+updateHome();
+</script>
+</body>
+</html>
