@@ -5,20 +5,20 @@
   <!-- OG / Twitter Card — GitHub Pages 썸네일 -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://taehodook.github.io/TPAC_Learning/" />
-  <meta property="og:title" content="TPAC 교육 프로그램" />
+  <meta property="og:title" content="TPAC AML/CFT 퀴즈 트레이너" />
   <meta property="og:description" content="자금세탁방지 업무능력 검정시험 전체 내용 학습 시스템 | 과목1+과목2 완전판" />
   <meta property="og:image" content="https://taehodook.github.io/TPAC_Learning/Thumbnail-yellow.png" />
   <meta property="og:image:width" content="1390" />
   <meta property="og:image:height" content="782" />
   <meta property="og:locale" content="ko_KR" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="TPAC 교육 프로그램" />
+  <meta name="twitter:title" content="TPAC AML/CFT 퀴즈 트레이너" />
   <meta name="twitter:description" content="자금세탁방지 업무능력 검정시험 전체 내용 학습 시스템" />
   <meta name="twitter:image" content="https://taehodook.github.io/TPAC_Learning/Thumbnail-yellow.png" />
   <link rel="canonical" href="https://taehodook.github.io/TPAC_Learning/" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TPAC 교육 프로그램 </title>
+<title>TPAC AML 퀴즈 트레이너 — 전체판</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -44,10 +44,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .screen.active{display:flex;flex-direction:column;}
 
 /* HOME */
-#home{align-items:center;padding:48px 20px 100px;gap:24px;background:var(--bg);}
-.logo-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);border:1px solid rgba(37,99,235,0.2);padding:4px 12px;border-radius:20px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px;}
-h1{font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.2;color:var(--text);letter-spacing:-0.5px;}
-.subtitle{color:var(--text2);font-size:13px;margin-top:4px;line-height:1.6;}
+#home{align-items:center;padding:40px 20px 100px;gap:20px;background:var(--bg);}
+.logo-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);border:1px solid rgba(37,99,235,0.2);padding:4px 12px;border-radius:20px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px;}
+.home-title-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;}
+h1{font-size:clamp(24px,5vw,38px);font-weight:900;line-height:1.15;color:var(--text);letter-spacing:-1px;margin:0;}
+.theme-toggle{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:5px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:var(--shadow-sm);white-space:nowrap;flex-shrink:0;}
+.theme-toggle:hover{border-color:var(--border2);color:var(--text);background:var(--surface2);}
+.subtitle{color:var(--text2);font-size:13px;margin-top:6px;line-height:1.6;}
 .dashboard{width:100%;max-width:800px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;box-shadow:var(--shadow);}
 .dash-title{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-weight:600;margin-bottom:14px;}
 .overall-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
@@ -116,7 +119,7 @@ h1{font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.2;color:var(--te
 
 /* QUIZ */
 #quiz{padding:0;align-items:center;background:var(--bg);}
-.quiz-container{width:100%;max-width:680px;display:flex;flex-direction:column;gap:0;}
+.quiz-container{width:100%;max-width:680px;display:flex;flex-direction:column;gap:0;padding-bottom:100px;}
 .quiz-header{display:flex;align-items:center;gap:10px;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;box-shadow:var(--shadow-sm);}
 .quiz-meta{display:flex;gap:6px;align-items:center;flex:1;flex-wrap:wrap;}
 .quiz-count{font-family:'Space Mono',monospace;font-size:12px;color:var(--text2);font-weight:600;}
@@ -127,26 +130,26 @@ h1{font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.2;color:var(--te
 .timer-track{fill:none;stroke:var(--border);stroke-width:4;}
 .timer-fill{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .5s;}
 .timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);}
-.quiz-card-pad{padding:16px 20px 20px;}
-.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;animation:slideIn .25s ease;box-shadow:var(--shadow);}
-.q-category{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-weight:600;margin-bottom:8px;}
-.q-text{font-size:15px;font-weight:700;line-height:1.6;margin-bottom:18px;color:var(--text);}
-.options{display:flex;flex-direction:column;gap:7px;}
-.opt-btn{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;text-align:left;transition:all .12s;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-sm);}
-.opt-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-light);}
+.quiz-card-pad{padding:16px 20px 0;}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:22px;animation:slideIn .25s ease;box-shadow:var(--shadow);}
+.q-category{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);font-weight:700;margin-bottom:10px;display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;}
+.q-text{font-size:16px;font-weight:800;line-height:1.65;margin-bottom:20px;color:var(--text);letter-spacing:-0.2px;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.opt-btn{width:100%;padding:12px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13.5px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;text-align:left;transition:all .12s;display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-sm);font-weight:500;line-height:1.5;}
+.opt-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-light);color:var(--text);}
 .opt-btn:disabled{cursor:default;}
-.opt-btn.correct{border-color:var(--accent3);background:#f0fdf4;color:var(--text);}
+.opt-btn.correct{border-color:var(--accent3);background:#f0fdf4;color:var(--text);font-weight:700;}
 .opt-btn.wrong{border-color:var(--danger);background:var(--danger-light);color:var(--text2);}
-.opt-letter{width:24px;height:24px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;color:var(--text2);}
+.opt-letter{width:26px;height:26px;border-radius:5px;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;color:var(--text2);}
 .opt-btn.correct .opt-letter{background:var(--accent3);border-color:var(--accent3);color:#fff;}
 .opt-btn.wrong .opt-letter{background:var(--danger);border-color:var(--danger);color:#fff;}
 .result-popup{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;animation:popIn .2s ease;margin-top:8px;box-shadow:var(--shadow);}
 @keyframes popIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .result-correct{border-color:#bbf7d0;background:#f0fdf4;}
 .result-wrong{border-color:#fecaca;background:var(--danger-light);}
-.result-header{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text);}
-.result-explain{font-size:12px;color:var(--text2);line-height:1.75;}
-.btn-next{width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;margin-top:12px;box-shadow:var(--shadow-sm);}
+.result-header{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin-bottom:8px;color:var(--text);}
+.result-explain{font-size:13px;color:var(--text2);line-height:1.8;font-weight:400;}
+.btn-next{width:100%;padding:11px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;margin-top:12px;box-shadow:var(--shadow-sm);}
 .btn-next:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent);}
 
 /* WRONG */
@@ -217,11 +220,13 @@ body.dark .opt-btn.wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,
 
 <!-- ══ HOME ══ -->
 <div id="home" class="screen active">
-<div style="text-align:center;position:relative;">
-    <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" style="position:absolute;top:0;right:0;">🌙 다크</button>
-    <div class="logo-badge">TPAC 대비</div>
-    <h1>TPAC 트레이닝</h1>
-    <p class="subtitle">TPC 시험 전체 내용 학습 시스템 | 과목1+과목2</p>
+  <div style="text-align:center;">
+    <div class="logo-badge">TPAC · AML/CFT</div>
+    <div class="home-title-row">
+      <h1>TPAC 트레이닝</h1>
+      <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">🌙 다크</button>
+    </div>
+    <p class="subtitle">자금세탁방지 업무능력 검정시험 전체 내용 학습 시스템 | 과목1+과목2 완전판</p>
   </div>
   <div class="dashboard">
     <div class="dash-title">📊 오늘의 학습 성과</div>
@@ -298,7 +303,21 @@ body.dark .opt-btn.wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,
         <div class="timer-num" id="quiz-timer-num">30</div>
       </div>
     </div>
-    <div class="category-tabs" id="quiz-cats" style="padding:12px 20px 0;"></div>
+    <!-- 문제 진행 현황 바 -->
+    <div style="padding:10px 20px 0;background:var(--surface);border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-size:11px;font-weight:600;color:var(--text2);">문제 진행 현황</div>
+        <div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--text2);">
+          풀이 <span id="q-done-cnt" style="color:var(--accent);font-weight:700;">0</span>
+          &nbsp;·&nbsp;
+          남은 <span id="q-remain-cnt" style="color:var(--text2);font-weight:700;">0</span>
+          &nbsp;/ 전체 <span id="q-total-cnt" style="color:var(--text2);">0</span>
+        </div>
+      </div>
+      <div style="height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:10px;">
+        <div id="quiz-prog-fill" style="height:100%;border-radius:99px;background:var(--accent);transition:width .4s ease;width:0%;"></div>
+      </div>
+    </div>
     <div class="quiz-card-pad" id="q-card-wrap"></div>
   </div>
 </div>
@@ -929,7 +948,7 @@ let state={
   studied:JSON.parse(localStorage.getItem('tpac2_studied')||'[]'),
   wrong:JSON.parse(localStorage.getItem('tpac2_wrong')||'[]'),
   stats:JSON.parse(localStorage.getItem('tpac2_stats')||'{"c":0,"t":0}'),
-  tFilter:'all', qFilter:'all',
+  tFilter:'all',
   tIdx:0, qNum:0, streak:0,
   tTimer:null, qTimer:null,
   tVal:60, qVal:30,
@@ -955,7 +974,7 @@ function showScreen(id){
 }
 function startMode(mode){
   if(mode==='theory'){showScreen('theory');state.tIdx=0;renderTheory();}
-  if(mode==='quiz'){showScreen('quiz');state.qNum=0;buildCatTabs('quiz');nextQ();}
+  if(mode==='quiz'){showScreen('quiz');state.qNum=0;nextQ();}
 }
 
 // ════════════════════════════════════════════
@@ -1004,14 +1023,7 @@ function updateHome(){
 // THEORY
 // ════════════════════════════════════════════
 function getTCards(){return state.tFilter==='all'?THEORY_CARDS:THEORY_CARDS.filter(c=>c.cat===state.tFilter);}
-function buildCatTabs(mode){
-  const cats=mode==='theory'?['all',...new Set(THEORY_CARDS.map(c=>c.cat))]:['all',...new Set(QUIZ_DATA.map(q=>q.cat))];
-  const wrap=document.getElementById(mode==='theory'?'theory-cats':'quiz-cats');
-  const cur=mode==='theory'?state.tFilter:state.qFilter;
-  wrap.innerHTML=cats.map(c=>`<button class="cat-tab ${cur===c?'active':''}" onclick="${mode==='theory'?'setTCat':'setQCat'}('${c}')">${c==='all'?'전체':c}</button>`).join('');
-}
-function setTCat(c){state.tFilter=c;state.tIdx=0;buildCatTabs('theory');renderTheory();}
-function renderTheory(){
+function setTCat(c){state.tFilter=c;state.tIdx=0;renderTheory();}function renderTheory(){
   clearTimers();
   const cards=getTCards();if(!cards.length)return;
   const card=cards[state.tIdx];
@@ -1057,8 +1069,7 @@ function updateTTimerUI(){
 // ════════════════════════════════════════════
 // QUIZ
 // ════════════════════════════════════════════
-function getQPool(){return state.qFilter==='all'?QUIZ_DATA:QUIZ_DATA.filter(q=>q.cat===state.qFilter);}
-function setQCat(c){state.qFilter=c;buildCatTabs('quiz');nextQ();}
+function getQPool(){return QUIZ_DATA;}
 let curQ=null;
 function nextQ(){
   clearTimers();
@@ -1067,6 +1078,15 @@ function nextQ(){
   state.qNum++;
   curQ=pool[Math.floor(Math.random()*pool.length)];
   document.getElementById('quiz-count').textContent='#'+state.qNum;
+  // 진행 현황 업데이트
+  const total=pool.length;
+  const done=Math.min(state.qNum-1, total);
+  const remain=Math.max(total-done, 0);
+  const pct=Math.min((done/total)*100, 100);
+  document.getElementById('q-done-cnt').textContent=done;
+  document.getElementById('q-remain-cnt').textContent=remain;
+  document.getElementById('q-total-cnt').textContent=total;
+  document.getElementById('quiz-prog-fill').style.width=pct+'%';
   document.getElementById('q-card-wrap').innerHTML=`
     <div class="q-card">
       <div class="q-category">${curQ.cat}</div>
@@ -1108,6 +1128,8 @@ function selectOpt(idx){
   <div class="result-explain">${curQ.ex}</div>
   <button class="btn-next" onclick="nextQ()">다음 문제 →</button>`;
   wrap.appendChild(p);
+  // 결과 팝업으로 부드럽게 스크롤
+  setTimeout(()=>p.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
   showToast(correct?'🎯 정답!':'틀렸습니다',correct?'success':'error');
 }
 function startQTimer(){
