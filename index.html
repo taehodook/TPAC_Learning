@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<!-- 카카오톡 & SNS 미리보기용 Open Graph 태그 -->
-<meta property="og:title" content="TPAC AML 퀴즈 트레이닝 ">
-<meta property="og:description" content="TPAC 자금세탁방지 시험 완벽 대비!">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://taehodook.github.io/TPAC_Learning/">
-<meta property="og:image" content="https://taehodook.github.io/TPAC_Learning/thumbnail-yellow.png"> <!-- 형광 노랑 별똥별 이미지 경로로 바꾸기 -->
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TPAC AML 퀴즈 트레이너 별똥별 배경">
-
-<!-- 추가로 Twitter/X에도 잘 나오게 (카톡에도 일부 도움) -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="TPAC 트레이닝 ">
-<meta name="twitter:description" content="TPAC 자금세탁방지 시험 완벽 대비!">
-<meta name="twitter:image" content="https://taehodook.github.io/TPAC_Learning/thumbnail-yellow.png">
 <meta charset="UTF-8">
+  <!-- OG / Twitter Card — GitHub Pages 썸네일 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://taehodook.github.io/TPAC_Learning/" />
+  <meta property="og:title" content="TPAC AML/CFT 퀴즈 트레이너" />
+  <meta property="og:description" content="자금세탁방지 업무능력 검정시험 전체 내용 학습 시스템 | 과목1+과목2 완전판" />
+  <meta property="og:image" content="https://taehodook.github.io/TPAC_Learning/Thumbnail-yellow.png" />
+  <meta property="og:image:width" content="1390" />
+  <meta property="og:image:height" content="782" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="TPAC AML/CFT 퀴즈 트레이너" />
+  <meta name="twitter:description" content="자금세탁방지 업무능력 검정시험 전체 내용 학습 시스템" />
+  <meta name="twitter:image" content="https://taehodook.github.io/TPAC_Learning/Thumbnail-yellow.png" />
+  <link rel="canonical" href="https://taehodook.github.io/TPAC_Learning/" />
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TPAC 트레이닝(링크공유금지!)</title>
+<title>TPAC AML 퀴즈 트레이너 — 전체판</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -204,7 +204,7 @@ body.dark .streak-chip{background:rgba(251,191,36,0.1);border-color:rgba(251,191
 body.dark .opt-btn.correct{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.4);}
 body.dark .opt-btn.wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.4);}
 /* theme toggle */
-.theme-toggle{position:fixed;top:14px;right:16px;z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:var(--shadow);}
+.theme-toggle{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:var(--shadow);}
 .theme-toggle:hover{border-color:var(--border2);color:var(--text);}
 
 </style>
@@ -215,14 +215,12 @@ body.dark .opt-btn.wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,
 <div class="bg-orb two"></div>
 <div id="app">
 
-<!-- ══ THEME TOGGLE ══ -->
-<button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">🌙 다크</button>
-
 <!-- ══ HOME ══ -->
 <div id="home" class="screen active">
-<div style="text-align:center">
+<div style="text-align:center;position:relative;">
+    <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" style="position:absolute;top:0;right:0;">🌙 다크</button>
     <div class="logo-badge">TPAC · AML/CFT</div>
-    <h1>TPAC 이론 & 문제풀이 </h1>
+    <h1>퀴즈 트레이너</h1>
     <p class="subtitle">자금세탁방지 업무능력 검정시험 전체 내용 학습 시스템 | 과목1+과목2 완전판</p>
   </div>
   <div class="dashboard">
