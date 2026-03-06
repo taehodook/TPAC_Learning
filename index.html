@@ -18,7 +18,126 @@
   <link rel="canonical" href="https://taehodook.github.io/TPAC_Learning/" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TPAC AML 퀴즈 트레이너 — 전체판</title>
+<!-- Firebase SDK (module) -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getDatabase, ref, set, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+// ★ 본인 Firebase 프로젝트 설정으로 교체하세요
+const firebaseConfig = {
+  apiKey: "AIzaSyAgguW2d_FpX3qojStJVzxR0k9tZKpPLaw",
+  authDomain: "tpac-training.firebaseapp.com",
+  databaseURL: "hhttps://tpac-training-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "tpac-training",
+  storageBucket: "tpac-training.firebasestorage.app",
+  messagingSenderId: "58385661714",
+  appId: "1:58385661714:web:ca3f028ac0fc2607877dcb"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+function writeLog(user, action) {
+  const logRef = ref(db, 'access_logs/' + user.uid + '/' + Date.now());
+  set(logRef, {
+    email: user.email,
+    action: action,
+    timestamp: serverTimestamp(),
+    ua: navigator.userAgent.substring(0, 120)
+  });
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = '';
+    const lbl = document.getElementById('user-email-label');
+    if (lbl) lbl.textContent = user.email;
+  } else {
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+window.doLogin = async function() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pw    = document.getElementById('auth-pw').value;
+  const btn   = document.getElementById('auth-submit-btn');
+  const err   = document.getElementById('auth-error');
+  if (!email || !pw) { err.textContent='이메일과 비밀번호를 입력하세요.'; return; }
+  btn.disabled=true; btn.textContent='로그인 중…';
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, pw);
+    writeLog(cred.user, 'login');
+    err.textContent='';
+  } catch(e) {
+    err.textContent=authErrMsg(e.code);
+    btn.disabled=false; btn.textContent='로그인';
+  }
+};
+
+window.doSignup = async function() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pw    = document.getElementById('auth-pw').value;
+  const btn   = document.getElementById('auth-submit-btn');
+  const err   = document.getElementById('auth-error');
+  if (!email||!pw) { err.textContent='이메일과 비밀번호를 입력하세요.'; return; }
+  if (pw.length<6)  { err.textContent='비밀번호는 6자 이상이어야 합니다.'; return; }
+  btn.disabled=true; btn.textContent='가입 중…';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pw);
+    writeLog(cred.user, 'signup');
+    err.textContent='';
+  } catch(e) {
+    err.textContent=authErrMsg(e.code);
+    btn.disabled=false; btn.textContent='회원가입';
+  }
+};
+
+window.doReset = async function() {
+  const email = document.getElementById('auth-email').value.trim();
+  const err   = document.getElementById('auth-error');
+  if (!email) { err.textContent='이메일을 먼저 입력하세요.'; return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    err.style.color='#059669'; err.textContent='✉️ 재설정 메일을 발송했습니다.';
+  } catch(e) {
+    err.style.color='#dc2626'; err.textContent=authErrMsg(e.code);
+  }
+};
+
+window.doLogout = async function() {
+  const user = auth.currentUser;
+  if (user) writeLog(user, 'logout');
+  await signOut(auth);
+};
+
+window.switchAuthTab = function(tab) {
+  const isLogin = tab==='login';
+  document.getElementById('tab-login').classList.toggle('auth-tab-active', isLogin);
+  document.getElementById('tab-signup').classList.toggle('auth-tab-active', !isLogin);
+  document.getElementById('auth-submit-btn').textContent = isLogin ? '로그인' : '회원가입';
+  document.getElementById('auth-submit-btn').onclick = isLogin ? window.doLogin : window.doSignup;
+  document.getElementById('auth-reset-row').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('auth-error').textContent='';
+};
+
+function authErrMsg(code) {
+  return ({
+    'auth/invalid-email':        '올바른 이메일 형식이 아닙니다.',
+    'auth/user-not-found':       '등록되지 않은 이메일입니다.',
+    'auth/wrong-password':       '비밀번호가 틀렸습니다.',
+    'auth/email-already-in-use': '이미 사용 중인 이메일입니다.',
+    'auth/weak-password':        '비밀번호가 너무 짧습니다 (6자 이상).',
+    'auth/too-many-requests':    '요청이 너무 많습니다. 잠시 후 다시 시도하세요.',
+    'auth/invalid-credential':   '이메일 또는 비밀번호가 올바르지 않습니다.',
+  })[code] || '오류: ' + code;
+}
+</script>
+
+<title>TPAC 트레이닝 | AML/CFT 학습</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -210,17 +329,72 @@ body.dark .opt-btn.wrong{background:rgba(248,113,113,0.1);border-color:rgba(248,
 .theme-toggle{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:var(--shadow);}
 .theme-toggle:hover{border-color:var(--border2);color:var(--text);}
 
+/* ═══ AUTH SCREEN ═══ */
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:20px;}
+.auth-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:32px 28px;box-shadow:var(--shadow-md);}
+.auth-logo{text-align:center;margin-bottom:24px;}
+.auth-logo .logo-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);border:1px solid rgba(37,99,235,0.2);padding:4px 12px;border-radius:20px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px;}
+.auth-logo h2{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-0.5px;}
+.auth-logo p{font-size:12px;color:var(--text2);margin-top:4px;}
+.auth-tabs{display:flex;gap:0;background:var(--surface2);border-radius:var(--radius);padding:3px;margin-bottom:20px;}
+.auth-tab{flex:1;padding:7px;border:none;background:transparent;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.auth-tab-active{background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm);}
+.auth-field{margin-bottom:12px;}
+.auth-field label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:0.5px;text-transform:uppercase;}
+.auth-field input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'Noto Sans KR',sans-serif;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;}
+.auth-field input:focus{border-color:var(--accent);}
+.auth-btn{width:100%;padding:11px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:4px;transition:all .15s;}
+.auth-btn:hover{background:#1d4ed8;}
+.auth-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.auth-error{font-size:12px;color:#dc2626;margin-top:10px;min-height:18px;text-align:center;font-weight:500;}
+.auth-reset{font-size:12px;color:var(--text2);text-align:center;margin-top:10px;}
+.auth-reset button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:'Noto Sans KR',sans-serif;text-decoration:underline;}
+/* 로그아웃 버튼 (홈 네비) */
+.logout-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);padding:4px 10px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+/* dark mode auth */
+body.dark #auth-screen{background:var(--bg);}
+body.dark .auth-field input{background:var(--surface2);border-color:var(--border);}
 </style>
 </head>
 <body>
+<!-- ═══ AUTH SCREEN ═══ -->
+<div id="auth-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-badge">TPAC · AML/CFT</div>
+      <h2>TPAC 트레이닝</h2>
+      <p>자금세탁방지 업무능력 검정시험 학습 시스템</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab auth-tab-active" id="tab-login" onclick="switchAuthTab('login')">로그인</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">회원가입</button>
+    </div>
+    <div class="auth-field">
+      <label>이메일</label>
+      <input type="email" id="auth-email" placeholder="example@email.com" onkeydown="if(event.key==='Enter')document.getElementById('auth-pw').focus()">
+    </div>
+    <div class="auth-field">
+      <label>비밀번호</label>
+      <input type="password" id="auth-pw" placeholder="6자 이상" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="auth-btn" id="auth-submit-btn" onclick="doLogin()">로그인</button>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-reset" id="auth-reset-row">
+      <button onclick="doReset()">비밀번호를 잊으셨나요?</button>
+    </div>
+  </div>
+</div>
+
 <div class="bg-grid"></div>
 <div class="bg-orb one"></div>
 <div class="bg-orb two"></div>
-<div id="app">
+<div id="app" style="display:none;">
 
 <!-- ══ HOME ══ -->
 <div id="home" class="screen active">
   <div style="text-align:center;">
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:8px;"><span id="user-email-label" style="font-weight:600;color:var(--accent);"></span><button class="logout-btn" onclick="doLogout()">로그아웃</button></div>
     <div class="logo-badge">TPAC · AML/CFT</div>
     <div class="home-title-row">
       <h1>TPAC 트레이닝</h1>
